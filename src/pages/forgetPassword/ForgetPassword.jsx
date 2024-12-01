@@ -1,16 +1,14 @@
 
 import PropTypes from 'prop-types';
-import './Login.scss';
-import { Link, useNavigate } from 'react-router-dom'; // for navigation after login
+import './ForgetPassword.scss';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import logo from './../../assets/login/logo.png';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
-export const Login = ({ t }) => {
-    const [form, setForm] = useState({ username: "", password: "" });
+export const ForgetPassword = ({ t }) => {
+    const [form, setForm] = useState({ email: ""});
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
 
     // Handle form field changes
     const handleChange = (e) => {
@@ -21,25 +19,20 @@ export const Login = ({ t }) => {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null); // Clear previous error
+        setError(null);
 
         try {
             // Create FormData object
             const formData = new FormData();
-            formData.append("username", form.username);
-            formData.append("password", form.password);
-
-            const response = await axios.post('http://127.0.0.1:8000/token', formData);
+            formData.append("email", form.email);
+            console.log(form)
+            const response = await axios.post('http://127.0.0.1:8000/forgot_password', form, {
+                headers: { 'Content-Type': 'application/json' },
+            });
 
             if (response.status === 200) {
-                console.log(response);  // Log the entire response object
-                const data = response.data; // Access the response data directly
+                console.log(response);  
 
-                // Save token or user info to localStorage/sessionStorage/Cookies
-                Cookies.set('authToken', data.access_token); // Example
-                console.log(data.access_token);  
-                // Redirect to another page
-                navigate('/');
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
@@ -48,7 +41,7 @@ export const Login = ({ t }) => {
     };
 
     return (
-        <div className="login w-full h-screen relative">
+        <div className="forget-password w-full h-screen relative">
             <div className="box absolute flex flex-col justify-between bg-white h-screen py-4 px-5">
                 <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -68,44 +61,19 @@ export const Login = ({ t }) => {
                         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                                <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
+                                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                                     {t("Authentification.EmailAddress")}
                                 </label>
                                 <div className="mt-2">
                                     <input
-                                        id="username"
-                                        name="username"
+                                        id="email"
+                                        name="email"
                                         type="text"
                                         value={form.username}
                                         onChange={handleChange}
                                         required
-                                        autoComplete="username"
+                                        autoComplete="email"
                                         className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="flex items-center justify-between">
-                                    <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
-                                        {t("Authentification.Password")}
-                                    </label>
-                                    <div className="text-sm">
-                                        <Link to='/forgetpassword' className="font-semibold text-blue-500 hover:text-blue-600">
-                                            {t("Authentification.Forget")}
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="mt-2">
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        value={form.password}
-                                        onChange={handleChange}
-                                        required
-                                        autoComplete="current-password"
-                                        className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm/6 outline-none"
                                     />
                                 </div>
                             </div>
@@ -133,6 +101,6 @@ export const Login = ({ t }) => {
     );
 };
 
-Login.propTypes = {
+ForgetPassword.propTypes = {
     t: PropTypes.func.isRequired,
 };

@@ -102,7 +102,10 @@
     "NotAMember": "لست عضواً بعد ؟",
     "CreateAccount": "إنشاء حساب مجاني",
     "ResetPassword": "إعادة تعيين كلمة المرور",
-    "AlreadyHaveAccount": "هل لديك حساب بالفعل ؟"
+    "AlreadyHaveAccount": "هل لديك حساب بالفعل ؟",
+    "ResetPasswordTitle": "إعادة تعيين كلمة المرور",
+    "NewPassword": "كلمة المرور الجديدة",
+    "ConfirmPassword": "تأكيد كلمة المرور"
   },
 
   "doctorCard": {

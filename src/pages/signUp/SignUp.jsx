@@ -13,8 +13,10 @@ export const SignUp = ({ t }) => {
         firstName: '',
         lastName: '',
         username: '',
+        phoneNumber: '',
         email: '',
         password: '',
+        is_doctor: false,
         confirmPassword: '',
     });
 
@@ -30,22 +32,22 @@ export const SignUp = ({ t }) => {
 
     const validateForm = () => {
         const newErrors = {};
-    
+
         // Check if firstName is not empty
         if (!formData.firstName.trim()) {
             newErrors.firstName = t("Errors.RequiredFirstName");
         }
-    
+
         // Check if lastName is not empty
         if (!formData.lastName.trim()) {
             newErrors.lastName = t("Errors.RequiredLastName");
         }
-    
+
         // Check if userName is not empty
         if (!formData.username.trim()) {
             newErrors.userName = t("Errors.RequiredUsername");
         }
-    
+
         // Check if email is valid
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex
         if (!formData.email.trim()) {
@@ -53,29 +55,28 @@ export const SignUp = ({ t }) => {
         } else if (!emailRegex.test(formData.email)) {
             newErrors.email = t("Errors.InvalidEmail"); // Add "InvalidEmail" to your translation file
         }
-    
+
         // Check if password matches confirmPassword
         if (!formData.password) {
             newErrors.password = t("Errors.RequiredPassword");
         } else if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = t("Errors.PasswordMismatch");
         }
-    
+
         // Update state with errors
         setErrors(newErrors);
-        console.log(newErrors)
-    
+
         // Return true if there are no errors
         return Object.keys(newErrors).length === 0;
     };
-    
+
 
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        console.log(formData)
         if (!validateForm()) return;
-        console.log(validateForm)
 
         // Exclude confirmPassword from the data being sent
         // eslint-disable-next-line no-unused-vars
@@ -122,6 +123,24 @@ export const SignUp = ({ t }) => {
 
                     <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit} className="space-y-2">
+                        <div>
+                                <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
+                                    {t("Authentification.userName")}
+                                </label>
+                                <div className="mt-1">
+                                    <input
+                                        id="username"
+                                        name="username"
+                                        type="text"
+                                        value={formData.username}
+                                        onChange={handleChange}
+
+                                        autoComplete="username"
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                    />
+                                    {errors.userName && <p className="text-red-500 text-sm">{errors.userName}</p>}
+                                </div>
+                            </div>
                             <div className="grid grid-cols-2 gap-1">
                                 <div className='col-span-1'>
                                     <label htmlFor="firstName" className="block text-sm/6 font-medium text-gray-900">
@@ -158,24 +177,7 @@ export const SignUp = ({ t }) => {
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
-                                    {t("Authentification.userName")}
-                                </label>
-                                <div className="mt-1">
-                                    <input
-                                        id="username"
-                                        name="username"
-                                        type="text"
-                                        value={formData.username}
-                                        onChange={handleChange}
-                                        
-                                        autoComplete="username"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                                    />
-                                    {errors.userName && <p className="text-red-500 text-sm">{errors.userName}</p>}
-                                </div>
-                            </div>
+                            
 
                             <div>
                                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
@@ -216,7 +218,7 @@ export const SignUp = ({ t }) => {
 
                                 <div className='col-span-1'>
                                     <label htmlFor="confirmPassword" className="block text-sm/6 font-medium text-gray-900">
-                                        {t("Authentification.ResetPassword")}
+                                        {t("Authentification.ConfirmPassword")}
                                     </label>
                                     <div className="mt-1">
                                         <input
@@ -231,6 +233,15 @@ export const SignUp = ({ t }) => {
                                         {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                                     </div>
                                 </div>
+                                <label className='flex items-center gap-2'>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.is_doctor}
+                                        onChange={(e) => setFormData({ ...formData, is_doctor: e.target.checked })}
+                                    />
+                                    <p>Are you a doctor?</p>
+                                </label>
+
                             </div>
 
                             <div>

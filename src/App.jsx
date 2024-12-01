@@ -11,6 +11,8 @@ import { Doctors } from "./pages/doctors/Doctors";
 import { DoctorProfile } from "./pages/doctorPofile/DoctorProfile";
 import { AppointmentPage } from "./pages/appointmentPage/AppointmentPage";
 import { BookingConfirmation } from "./pages/bookingConfirmation/BookingConfirmation";
+import { ForgetPassword } from "./pages/forgetPassword/ForgetPassword";
+import { ResetPassword } from "./pages/resetPassword/ResetPassword";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -23,12 +25,14 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage t={t} />} />
         <Route path="login" element={<Login t={t} />} />
+        <Route path="forgetpassword" element={<ForgetPassword t={t} />} />
         <Route path="signup" element={<SignUp t={t} />} />
         <Route path="doctors" element={<Doctors t={t} />} />
         <Route path="doctor/:id" element={<DoctorProfile t={t} />} />
         <Route path="appointment" element={<AppointmentPage t={t} />} />
         <Route path="bookingconfirmation" element={<BookingConfirmation t={t} />} />
-        
+        <Route path="/reset-password" element={<ResetPassword t={t} />} />
+
         
       </Routes>
     </>

@@ -93,7 +93,7 @@
   },
   "Authentification": {
     "Title": "Connectez-vous à votre compte",
-    "userName": "User Name",
+    "userName": "UserName",
     "firstName": "First Name",
     "lastName": "Last Name",
     "EmailAddress": "Adresse Email",
@@ -102,7 +102,10 @@
     "NotAMember": "Pas encore membre ?",
     "CreateAccount": "Créez votre compte gratuit",
     "ResetPassword": "Réinitialiser le mot de passe",
-    "AlreadyHaveAccount": "Vous avez déjà un compte ?"
+    "AlreadyHaveAccount": "Vous avez déjà un compte ?",
+    "ResetPasswordTitle": "Réinitialisez votre mot de passe",
+    "NewPassword": "Nouveau mot de passe",
+    "ConfirmPassword": "Confirmez le mot de passe"
   },
   "doctorCard": {
     "doctor": "Docteur",
