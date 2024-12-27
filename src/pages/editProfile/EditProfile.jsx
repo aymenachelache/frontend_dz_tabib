@@ -10,12 +10,14 @@ import { useNavigate } from "react-router-dom";
 
 
 export const EditProfile = ({ t }) => {
-    const specializations = [{ id: 1, name: "Cardiologie" },
-    { id: 2, name: "Dermatologie" },
-    { id: 3, name: "Neurologie" },
-    { id: 4, name: "Pédiatrie" },
-    { id: 5, name: "Gynécologie" },
-    { id: 6, name: "Oncologie" },];
+    // const specializations = [{ id: 1, name: "Cardiologie" },
+    // { id: 2, name: "Dermatologie" },
+    // { id: 3, name: "Neurologie" },
+    // { id: 4, name: "Pédiatrie" },
+    // { id: 5, name: "Gynécologie" },
+    // { id: 6, name: "Oncologie" },];
+    const [specializations, setSpecializations] = useState([]);
+
     const languageOptions = [
         { value: "English", label: "English" },
         { value: "French", label: "French" },
@@ -109,6 +111,21 @@ export const EditProfile = ({ t }) => {
         };
 
         fetchProfile();
+
+
+        // Fetch specializations from the API
+        const fetchSpecializations = async () => {
+            try {
+                const res = await axios.get("http://127.0.0.1:8000/specializations");
+                setSpecializations(res.data);
+
+            } catch (error) {
+                console.error("Error fetching specializations:", error);
+            }
+        };
+
+        // Call the async function
+        fetchSpecializations();
     }, []);
 
     const handleChange = (e) => {
@@ -157,6 +174,7 @@ export const EditProfile = ({ t }) => {
             </div>
         );
     }
+
 
     return (
         <>
