@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 
 
 export const Doctors = ({ t }) => {
+  // const [doctors, setDoctors] = useState([]);
   const doctors = [
     {
       _id: 1,
@@ -86,6 +87,8 @@ export const Doctors = ({ t }) => {
       img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
     },
   ];
+
+
   return (
     <>
       <Header t={t} />

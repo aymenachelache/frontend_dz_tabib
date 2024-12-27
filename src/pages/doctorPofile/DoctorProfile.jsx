@@ -2,8 +2,24 @@
 import PropTypes from 'prop-types';
 import { Header } from '../../components/header/Header';
 import { Footer } from '../../components/footer/Footer';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+
+
 export const DoctorProfile = ({ t }) => {
+    const [profile, setProfile] = useState({});
+    const [position, setPosition] = useState([36.752887, 3.042048]);
+    const onLocationSelect = (lat, lng) => { setProfile((prevProfile) => ({ ...prevProfile, latitude: lat, longitude: lng, })); };
+    const LocationMarker = () => {
+        useMapEvents({
+            click(e) {
+                const { lat, lng } = e.latlng; setPosition([lat, lng]); onLocationSelect(lat, lng);
+            },
+        });
+        return position === null ? null : <Marker position={position} />;
+    };
     // const doctor = {
     //     _id: 1,
     //     name: "Achelache Aymen",
@@ -85,6 +101,19 @@ export const DoctorProfile = ({ t }) => {
         ] // Avis des patients
     };
 
+    const { id } = useParams();
+    useEffect(() => {
+        const fetchData = async () => {
+            const doctorResponse = await axios.get(`http://127.0.0.1:8000/doctors/${id}`);
+            setProfile(doctorResponse.data);
+            console.log(doctorResponse.data)
+            setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
+            console.log(position)
+        }
+        fetchData();
+
+    }, []);
+
     return (
         <div className="doctor-profile h-auto">
             <Header t={t} />
@@ -93,14 +122,14 @@ export const DoctorProfile = ({ t }) => {
                     {/* Doctor Info */}
                     <section className="p-6 flex items-center gap-6 border-b">
                         <div className="w-28 h-28 object-cover bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
-                            <img src={doctor.img} alt="DoctorImg" />
+                            <img src={!profile.photo ? doctor.img : profile.photo} alt="DoctorImg" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-semibold">
-                                {t("doctorCard.doctor")} {doctor.name}
+                                {t("doctorCard.doctor")} {profile.first_name} {profile.last_name}
                             </h1>
                             <p className="text-gray-500">
-                                {doctor.title}
+                                {profile.email}
                             </p>
                             {/* Ratings */}
                             <div className="flex items-center mt-2">
@@ -125,6 +154,47 @@ export const DoctorProfile = ({ t }) => {
                                 <p className="text-gray-700">
                                     {doctor.description}
                                 </p>
+                                <p className="my-1">
+                                    <strong>{t("spoken_languages")}:</strong> {profile.spoken_languages}
+                                </p>
+                                <p className="my-1">
+                                    <strong>{t("years_of_experience")}:</strong> {profile.years_of_experience}
+                                </p>
+                                <p className="my-1">
+                                    <strong>{t("zoom_link")}:</strong>{" "}
+                                    <a
+                                        href={profile.zoom_link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500"
+                                    >
+                                        {profile.zoom_link}
+                                    </a>
+                                </p>
+                                <p className="my-1">
+                                    <strong>{t("daily_visit_limit")}:</strong> {profile.daily_visit_limit}
+                                </p>
+                                <p className="my-1">
+                                    <strong>{t("Location")}:</strong>
+                                </p>
+                                <div className='my-5'>
+                                    <MapContainer
+                                        center={position}
+                                        zoom={13}
+                                        scrollWheelZoom={false}
+                                        className="w-full h-64 rounded-lg"
+                                        key={position}
+                                    >
+                                        <TileLayer
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        />
+                                        <LocationMarker />
+                                    </MapContainer>
+
+                                </div>
+
+
                             </div>
 
                             {/* Reviews Section */}
@@ -148,6 +218,7 @@ export const DoctorProfile = ({ t }) => {
                                         </div>
                                     ))}
                                     <button className="text-blue-500 mt-2">View More</button>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -158,19 +229,16 @@ export const DoctorProfile = ({ t }) => {
                             <div className="mb-4">
                                 <p className="text-sm mt-1">
                                     <span className="font-medium">{t("doctorCard.specializedIn")}</span>{" "}
-                                    {doctor.subSpecializations.join(", ")}
+                                    {profile.specialization_name}
                                 </p>
                                 {/* Location */}
                                 <p className="text-sm text-gray-600 mt-2">
-                                    {t("doctorCard.location")} {doctor.location.address}, Algeria
+                                    {t("doctorCard.location")} {profile.street}
                                 </p>
-                                <p className="text-sm text-gray-600">
-                                    {t("doctorCard.fees")} {doctor.fees} DA
+                                <p className="text-sm text-gray-600 mt-2">
+                                    {t("doctorCard.location")} {profile.city}, {profile.state}, Algeria
                                 </p>
-                                <p className="text-sm text-gray-600">
-                                    {t("doctorCard.waitingTime")} {doctor.waitingTime}
-                                </p>
-                                <p className="text-sm text-gray-600">{t("doctorCard.phone")} {doctor.phone}</p>
+                                <p className="text-sm text-gray-600">{t("doctorCard.phone")} {profile.phone_number}</p>
                             </div>
                             {/* Appointment Times */}
                             <div className="space-y-4">
@@ -185,7 +253,7 @@ export const DoctorProfile = ({ t }) => {
                                             <div
                                                 className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm px-4 py-3 mb-2"
                                             >
-                                                {el.availableSlots}/{el.maxSlots}
+                                                {el.availableSlots}/{profile.daily_visit_limit}
                                             </div>
                                             <Link to="/appointment">
                                                 <button

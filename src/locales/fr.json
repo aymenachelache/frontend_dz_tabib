@@ -188,5 +188,24 @@
     "RequiredEmail": "L'adresse e-mail est requise.",
     "RequiredPassword": "Le mot de passe est requis.",
     "PasswordMismatch": "Les mots de passe ne correspondent pas."
-  }
+  },
+
+  "loading": "Loading...",
+  "update_profile": "Update Profile",
+  "profile": {
+    "noTokenError": "No authentication token found. Please log in.",
+    "fetchError": "Failed to fetch profile data.",
+    "updateSuccess": "Profile updated successfully.",
+    "updateError": "Failed to update profile. Please try again.",
+    "my_profile": "My Profile"
+  },
+  "username": "Username",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "email": "Email",
+  "phone_number": "Phone Number",
+  "state": "State",
+  "city": "City",
+  "street": "Street",
+  "spoken_languages": "Spoken Languages"
 }

@@ -1,13 +1,20 @@
 import ChangeLanguage from "../chengeLanguage/changeLanguage"
 import logo from '../../assets/dz_tabib.svg'
+import profile from '../../assets/profile_icon.png'
 import { useState } from "react";
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import dztabib from "../../assets/dz_tabib.svg"
+import Cookies from 'js-cookie';
 
-export const Header = ({t}) => {
+export const Header = ({ t }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  // eslint-disable-next-line no-unused-vars
+  const [isAuth, setIsAuth] = useState(Cookies.get("authToken"));
+  const handleLogout = () => {
+    Cookies.remove("authToken");
+    window.location = "/";
+  }
   return (
     <header className="bg-white">
       <nav
@@ -47,14 +54,38 @@ export const Header = ({t}) => {
             </svg>
           </button>
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-4">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center gap-4">
           <ChangeLanguage />
-          <Link to="/signup" className="text-sm/6 font-semibold text-gray-900">
-            {t("Header.SignUp")}
-          </Link>
-          <Link to="/login" className="text-sm/6 font-semibold text-gray-900">
-            {t("Header.Login")}
-          </Link>
+          {!isAuth ? <>
+            <Link to="/signup" className="text-sm/6 font-semibold text-gray-900">
+              {t("Header.SignUp")}
+            </Link>
+            <Link to="/login" className="text-sm/6 font-semibold text-gray-900">
+              {t("Header.Login")}
+            </Link>
+          </> : <div className="group relative">
+            <Link to={"/profile"}>
+              <img
+                src={profile}
+                className="w-5 cursor-pointer"
+                alt=""
+              />
+            </Link>
+            {isAuth && (
+              <div className="group-hover:block hidden absolute z-50 dropdown-menu right-0 pt-4">
+                <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
+                  <Link to="/profile"><p className="cursor-pointer hover:text-black">My Profile</p></Link>
+                  <Link to="/editprofile"><p className="cursor-pointer hover:text-black">Edit Profile</p></Link>
+                  <p
+                    onClick={handleLogout}
+                    className="cursor-pointer hover:text-black"
+                  >
+                    Logout
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>}
         </div>
       </nav>
       {/* Mobile menu, show/hide based on menu open state. */}
@@ -90,80 +121,33 @@ export const Header = ({t}) => {
               </svg>
             </button>
           </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                <div className="-mx-3">
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                    aria-controls="disclosure-1"
-                    aria-expanded="false"
-                  >
-                    {t("Header.HomePage")}
-                    {/*
-              Expand/collapse icon, toggle classes based on menu open state.
-  
-              Open: "rotate-180", Closed: ""
-            */}
-                    <svg
-                      className="size-5 flex-none"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      data-slot="icon"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                  {/* 'Product' sub-menu, show/hide based on menu state. */}
-                  <div className="mt-2 space-y-2" id="disclosure-1">
-                    <a
-                      href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
-                    >
-                      Analytics
-                    </a>
-                    <a
-                      href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
-                    >
-                      Engagement
-                    </a>
-                  </div>
-                </div>
-                <Link
-                  to="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Login
-                </Link>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Marketplace
-                </a>
+          <div className="h-[90%] flex flex-col justify-between divide-y divide-gray-500/10">
+            {isAuth && <><div className="py-6">
+              <div className="-mx-3">
+                <Link to="/" className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">{t("Header.HomePage")}</Link>
+                <Link to="/profile" className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">{t("Header.Profile")}</Link>
+                <Link to="/editprofile" className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">{t("Header.EditProfile")}</Link>
+                <div to="/" className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 cursor-pointer" onClick={handleLogout}>{t("Header.LogOut")}</div>
               </div>
-              <div className="py-6">
-                <Link
-                  to="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  {t("Header.Login")}
-                </Link>
-                <Link
-                  to="/signup"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  {t("Header.SignUp")}
-                </Link>
-              </div>
+
             </div>
+            </>
+
+            }
+            {!isAuth && <div className="py-6">
+              <Link
+                to="/login"
+                className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+              >
+                {t("Header.Login")}
+              </Link>
+              <Link
+                to="/signup"
+                className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+              >
+                {t("Header.SignUp")}
+              </Link>
+            </div>}
           </div>
         </div>
       </div>

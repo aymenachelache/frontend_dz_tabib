@@ -22,7 +22,6 @@ export const Login = ({ t }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null); // Clear previous error
-
         try {
             // Create FormData object
             const formData = new FormData();

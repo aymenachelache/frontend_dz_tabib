@@ -105,7 +105,7 @@ export const HomePage = ({ t }) => {
                             <div className="flex">
                                 <input
                                     type="text"
-                                    placeholder="Search for the tool you like"
+                                    placeholder="Search for the doctor"
                                     className="w-full md:w-80 px-3 h-10 rounded-s border-2 border-sky-500 focus:outline-none focus:border-sky-500"
                                 />
                                 <button
@@ -421,9 +421,9 @@ export const HomePage = ({ t }) => {
                     <p className="!text-center text-gray-700">
                         {t("HomePage.home.aboutPlatform.description")}
                     </p>
-                    <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                        Click Me
-                    </button>
+                    <Link to='/' className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                    {t("Footer.About.AboutUs")}
+                    </Link>
                 </div>
 
             </div>

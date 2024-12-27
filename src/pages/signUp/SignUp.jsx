@@ -10,10 +10,10 @@ import axios from 'axios';
 
 export const SignUp = ({ t }) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         username: '',
-        phoneNumber: '',
+        phone_number: '',
         email: '',
         password: '',
         is_doctor: false,
@@ -34,18 +34,23 @@ export const SignUp = ({ t }) => {
         const newErrors = {};
 
         // Check if firstName is not empty
-        if (!formData.firstName.trim()) {
-            newErrors.firstName = t("Errors.RequiredFirstName");
+        if (!formData.first_name.trim()) {
+            newErrors.first_name = t("Errors.RequiredFirstName");
         }
 
         // Check if lastName is not empty
-        if (!formData.lastName.trim()) {
-            newErrors.lastName = t("Errors.RequiredLastName");
+        if (!formData.last_name.trim()) {
+            newErrors.last_name = t("Errors.RequiredLastName");
         }
 
         // Check if userName is not empty
         if (!formData.username.trim()) {
             newErrors.userName = t("Errors.RequiredUsername");
+        }
+
+        // Check if phone_number is not empty
+        if (!formData.phone_number.trim()) {
+            newErrors.phone_number = t("Errors.Requiredphone_number");
         }
 
         // Check if email is valid
@@ -75,12 +80,12 @@ export const SignUp = ({ t }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log(formData)
         if (!validateForm()) return;
 
         // Exclude confirmPassword from the data being sent
         // eslint-disable-next-line no-unused-vars
         const { confirmPassword, ...dataToSend } = formData;
+        console.log(dataToSend)
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/register', dataToSend, {
@@ -105,8 +110,8 @@ export const SignUp = ({ t }) => {
     };
 
     return (
-        <div className="signup w-full h-screen relative">
-            <div className="box absolute flex flex-col justify-between bg-white h-screen py-4 px-5">
+        <div className="signup w-full h-[120vh] relative">
+            <div className="box absolute flex flex-col justify-between bg-white h-full py-4 px-5">
                 <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                         <Link to="/">
@@ -123,7 +128,7 @@ export const SignUp = ({ t }) => {
 
                     <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit} className="space-y-2">
-                        <div>
+                            <div>
                                 <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
                                     {t("Authentification.userName")}
                                 </label>
@@ -136,48 +141,48 @@ export const SignUp = ({ t }) => {
                                         onChange={handleChange}
 
                                         autoComplete="username"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                        className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                                     />
                                     {errors.userName && <p className="text-red-500 text-sm">{errors.userName}</p>}
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-1">
                                 <div className='col-span-1'>
-                                    <label htmlFor="firstName" className="block text-sm/6 font-medium text-gray-900">
+                                    <label htmlFor="first_name" className="block text-sm/6 font-medium text-gray-900">
                                         {t("Authentification.firstName")}
                                     </label>
                                     <div className="mt-1">
                                         <input
-                                            id="firstName"
-                                            name="firstName"
+                                            id="first_name"
+                                            name="first_name"
                                             type="text"
-                                            value={formData.firstName}
+                                            value={formData.first_name}
                                             onChange={handleChange}
-                                            autoComplete="firstName"
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                            autoComplete="first_name"
+                                            className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                                         />
-                                        {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+                                        {errors.first_name && <p className="text-red-500 text-sm">{errors.firstName}</p>}
                                     </div>
                                 </div>
                                 <div className='col-span-1'>
-                                    <label htmlFor="lastName" className="block text-sm/6 font-medium text-gray-900">
+                                    <label htmlFor="last_name" className="block text-sm/6 font-medium text-gray-900">
                                         {t("Authentification.lastName")}
                                     </label>
                                     <div className="mt-1">
                                         <input
-                                            id="lastName"
-                                            name="lastName"
+                                            id="last_name"
+                                            name="last_name"
                                             type="text"
-                                            value={formData.lastName}
+                                            value={formData.last_name}
                                             onChange={handleChange}
-                                            autoComplete="lastName"
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                            autoComplete="last_name"
+                                            className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                                         />
-                                        {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+                                        {errors.last_name && <p className="text-red-500 text-sm">{errors.lastName}</p>}
                                     </div>
                                 </div>
                             </div>
-                            
+
 
                             <div>
                                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
@@ -191,7 +196,7 @@ export const SignUp = ({ t }) => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         autoComplete="email"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                        className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                                     />
                                     {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                                 </div>
@@ -210,7 +215,7 @@ export const SignUp = ({ t }) => {
                                             value={formData.password}
                                             onChange={handleChange}
                                             autoComplete="new-password"
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                            className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                                         />
                                         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                                     </div>
@@ -228,11 +233,33 @@ export const SignUp = ({ t }) => {
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
                                             autoComplete="new-password"
-                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                            className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                                         />
                                         {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                                     </div>
                                 </div>
+
+
+                            </div>
+                            <div>
+                                <label htmlFor="phone_number" className="block text-sm/6 font-medium text-gray-900">
+                                    {t("Authentification.phone_number")}
+                                </label>
+                                <div className="mt-1">
+                                    <input
+                                        id="phone_number"
+                                        name="phone_number"
+                                        type="text"
+                                        value={formData.phone_number}
+                                        onChange={handleChange}
+
+                                        autoComplete="phone_number"
+                                        className="block w-full rounded-md border-0  px-2 py-1.5 outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                    />
+                                    {errors.phone_number && <p className="text-red-500 text-sm">{errors.phone_number}</p>}
+                                </div>
+                            </div>
+                            <div>
                                 <label className='flex items-center gap-2'>
                                     <input
                                         type="checkbox"
@@ -241,9 +268,7 @@ export const SignUp = ({ t }) => {
                                     />
                                     <p>Are you a doctor?</p>
                                 </label>
-
                             </div>
-
                             <div>
                                 <button
                                     type="submit"

@@ -13,6 +13,11 @@ import { AppointmentPage } from "./pages/appointmentPage/AppointmentPage";
 import { BookingConfirmation } from "./pages/bookingConfirmation/BookingConfirmation";
 import { ForgetPassword } from "./pages/forgetPassword/ForgetPassword";
 import { ResetPassword } from "./pages/resetPassword/ResetPassword";
+import { MyProfile } from "./pages/profile/Profile";
+import { EditProfile } from "./pages/editProfile/editProfile";
+import { EditWorkingDays } from "./workingDays/EditWorkingDays";
+import { AddWorkingDay } from "./workingDays/AddWorkingDay";
+import { WorkingDaysList } from "./workingDays/WorkingDayList";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -32,6 +37,11 @@ function App() {
         <Route path="appointment" element={<AppointmentPage t={t} />} />
         <Route path="bookingconfirmation" element={<BookingConfirmation t={t} />} />
         <Route path="/reset-password" element={<ResetPassword t={t} />} />
+        <Route path="/profile" element={<MyProfile t={t} />} />
+        <Route path="/editprofile" element={<EditProfile t={t} />} />
+        <Route path="/editwokringdays/:id" element={<EditWorkingDays t={t} />} />
+        <Route path="/addworkingday" element={<AddWorkingDay t={t} />} />
+        <Route path="/workingdays/:id" element={<WorkingDaysList t={t} />} />
 
         
       </Routes>

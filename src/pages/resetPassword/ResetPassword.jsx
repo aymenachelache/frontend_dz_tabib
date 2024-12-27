@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import './ResetPassword.scss';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 import logo from './../../assets/login/logo.png';
 import axios from 'axios';
@@ -9,7 +9,7 @@ export const ResetPassword = ({ t }) => {
     const [form, setForm] = useState({ password: '', confirmPassword: '' });
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
-
+    const navigate =  useNavigate();
     // Récupérer le token depuis l'URL
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
@@ -47,6 +47,7 @@ export const ResetPassword = ({ t }) => {
             if (response.status === 200) {
                 setSuccessMessage('Your password has been reset successfully.');
                 setForm({ password: '', confirmPassword: '' });
+                navigate('/login');
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
