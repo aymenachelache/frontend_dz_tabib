@@ -44,6 +44,25 @@ export const WorkingDaysList = ({ t }) => {
   const handleEdit = (id) => {
     navigate(`/editwokringdays/${id}`);
   };
+  const handleRemove = async (id,index) => {
+    try {
+      const token = Cookies.get("authToken"); // Fetch token from cookies
+      
+      // API call to delete the working day by its ID
+      await axios.delete(`http://127.0.0.1:8000/working-days/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // If successful, remove it from the state
+      setWorkingDays((prevWorkingDays) =>
+          prevWorkingDays.filter((_, i) => i !== index)
+      );
+  } catch (error) {
+      console.error("Error removing working day:", error);
+  }
+  };
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;
@@ -83,12 +102,18 @@ export const WorkingDaysList = ({ t }) => {
                   <td className="border px-6 py-4 text-left">{day.daily_appointment_limit}</td>
                   <td className="border px-6 py-4 text-left">{day.hours[0].start_time}</td>
                   <td className="border px-6 py-4 text-left">{day.hours[0].end_time}</td>
-                  <td className="border px-6 py-4 text-left">
+                  <td className="flex gap-1  justify-center items-center border px-6 py-4 text-left">
                     <button
                       onClick={() => handleEdit(day.day_id)}
-                      className="text-blue-500 hover:text-white px-4 py-2 rounded-lg border border-blue-500 hover:bg-primary hover:text-white transition-all duration-300"
+                      className="text-blue-500 hover:text-white px-4 py-2 rounded-lg border border-blue-500 hover:bg-primary transition-all duration-300"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => handleRemove(day.day_id,index)}
+                      className="text-red-500 hover:text-white px-2 py-2 rounded-lg border border-red-500 hover:bg-red-600 transition-all duration-300"
+                    >
+                      Remove
                     </button>
                   </td>
                 </tr>
