@@ -48,6 +48,7 @@ export const EditProfile = ({ t }) => {
     const [success, setSuccess] = useState(null);
     const [position, setPosition] = useState([36.752887, 3.042048]);
     const [languages, setLanguages] = useState([]);
+    const [isDoctor, setIsDoctor] = useState(false);
     const navigate = useNavigate();
 
 
@@ -84,7 +85,7 @@ export const EditProfile = ({ t }) => {
                     },
                 });
                 const userProfile = response.data;
-
+                setIsDoctor(userProfile.is_doctor);
                 if (userProfile.is_doctor) {
                     const doctorResponse = await axios.get("http://127.0.0.1:8000/doctor", {
                         headers: {
@@ -240,7 +241,10 @@ export const EditProfile = ({ t }) => {
                                 //   required
                                 />
                             </label>
-                            <label className="block">
+                            {
+                                isDoctor && 
+                                <>
+                                <label className="block">
                                 <span className="text-gray-700">{t("years_of_experience")}</span>
                                 <input
                                     type="number"
@@ -356,7 +360,7 @@ export const EditProfile = ({ t }) => {
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                 />
                             </label>
-                        </div>
+                        
                         <MapContainer
                             center={position}
                             zoom={13}
@@ -369,6 +373,9 @@ export const EditProfile = ({ t }) => {
                             />
                             <LocationMarker />
                         </MapContainer>
+                                </>
+                            }
+                            </div>
 
                         <button
                             type="submit"

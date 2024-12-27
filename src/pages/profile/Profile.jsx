@@ -122,7 +122,7 @@ export const MyProfile = ({ t }) => {
                 <div className="mb-6">
                   <h2 className="text-xl font-bold mb-2">{t("aboutDoctor.title")}</h2>
                   <p className="my-1">
-                    <strong>{t("specialization")}:</strong> {profile.email}
+                    <strong>{t("Email")}:</strong> {profile.email}
                   </p>
                 </div>
                 {profile.is_doctor && (
@@ -197,9 +197,6 @@ export const MyProfile = ({ t }) => {
                   </p>
                   <p className="text-sm text-gray-600 mt-2">
                     {t("doctorCard.location")} {profile.city},{profile.state}, Algeria
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {t("doctorCard.fees")} {profile.fees} DA
                   </p>
                   <p className="text-sm text-gray-600">{t("doctorCard.phone")} {profile.phone_number}</p>
 
