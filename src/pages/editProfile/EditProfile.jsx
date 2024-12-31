@@ -31,6 +31,7 @@ export const EditProfile = ({ t }) => {
         first_name: "",
         last_name: "",
         email: "",
+        photo: "",
         years_of_experience: 0,
         state: "",
         city: "",
@@ -40,6 +41,7 @@ export const EditProfile = ({ t }) => {
         daily_visit_limit: 0,
         phone_number: "",
         specialization_id: 0,
+        assurances: [],
         latitude: 0,
         longitude: 0,
     });
@@ -73,7 +75,7 @@ export const EditProfile = ({ t }) => {
         const fetchProfile = async () => {
             const token = Cookies.get("authToken"); // Fetch token from cookies
             if (!token) {
-                setError(t("profile.noTokenError"));
+                navigate("/login"); // Redirect to login if no token found
                 setLoading(false);
                 return;
             }
@@ -92,8 +94,11 @@ export const EditProfile = ({ t }) => {
                             Authorization: `Bearer ${token}`,
                         },
                     });
+
                     setProfile({ ...userProfile, ...doctorResponse.data });
-                    setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
+                    if (profile.is_doctor && doctorResponse.data.latitude && doctorResponse.data.longitude) {
+                        setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
+                    }
                     const selectedLanguages = doctorResponse.data.spoken_languages
                         .split(", ")
                         .map((lang) => {
@@ -136,7 +141,21 @@ export const EditProfile = ({ t }) => {
             [name]: value,
         }));
     };
-
+    const preparePayload = (profile) => {
+        return {
+            ...profile,
+            years_of_experience: profile.years_of_experience || 0,
+            state: profile.state || "",
+            city: profile.city || "",
+            street: profile.street || "",
+            assurances: profile.assurances?.length > 0 ? profile.assurances : [],
+            zoom_link: profile.zoom_link  || "",
+            daily_visit_limit: profile.daily_visit_limit  || 0,
+            phone_number: profile.phone_number  || "",
+            specialization_id: profile.specialization_id  || 1,
+            photo: profile.photo || "" 
+        };
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -144,17 +163,16 @@ export const EditProfile = ({ t }) => {
 
         try {
             console.log(profile)
-
-            const res = await axios.put("http://127.0.0.1:8000/profile", profile, {
+            console.log(preparePayload(profile))
+            const res = await axios.put("http://127.0.0.1:8000/profile", preparePayload(profile), {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
             });
-            //   setSuccess(t("profile.updateSuccess"));
             navigate("/profile");
         } catch (err) {
-            //   setError(t("profile.updateError"));
+            console.log(err)
         } finally {
             setLoading(false);
         }
@@ -167,15 +185,6 @@ export const EditProfile = ({ t }) => {
             </div>
         );
     }
-
-    if (error) {
-        return (
-            <div className="text-center py-10">
-                <p className="text-red-500">{error}</p>
-            </div>
-        );
-    }
-
 
     return (
         <>
@@ -194,7 +203,7 @@ export const EditProfile = ({ t }) => {
                                     value={profile.username || ""}
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
+                                    required
                                 />
                             </label>
                             <label className="block">
@@ -205,7 +214,7 @@ export const EditProfile = ({ t }) => {
                                     value={profile.first_name || ""}
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
+                                    required
                                 />
                             </label>
                             <label className="block">
@@ -216,7 +225,7 @@ export const EditProfile = ({ t }) => {
                                     value={profile.last_name || ""}
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
+                                    required
                                 />
                             </label>
                             <label className="block">
@@ -227,7 +236,7 @@ export const EditProfile = ({ t }) => {
                                     value={profile.email || ""}
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
+                                    required
                                 />
                             </label>
                             <label className="block">
@@ -242,140 +251,140 @@ export const EditProfile = ({ t }) => {
                                 />
                             </label>
                             {
-                                isDoctor && 
+                                isDoctor &&
                                 <>
-                                <label className="block">
-                                <span className="text-gray-700">{t("years_of_experience")}</span>
-                                <input
-                                    type="number"
-                                    name="years_of_experience"
-                                    value={profile.years_of_experience || ""}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                    min={0}
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("state")}</span>
-                                <input
-                                    type="text"
-                                    name="state"
-                                    value={profile.state || ""}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("city")}</span>
-                                <input
-                                    type="text"
-                                    name="city"
-                                    value={profile.city || ""}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("street")}</span>
-                                <input
-                                    type="text"
-                                    name="street"
-                                    value={profile.street || ""}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("spoken_languages")}</span>
-                                <input
-                                    type="text"
-                                    name="spoken_languages"
-                                    value={profile.spoken_languages || ""}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                />
-                            </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("years_of_experience")}</span>
+                                        <input
+                                            type="number"
+                                            name="years_of_experience"
+                                            value={profile.years_of_experience || ""}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                            min={0}
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("state")}</span>
+                                        <input
+                                            type="text"
+                                            name="state"
+                                            value={profile.state || ""}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        //   required
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("city")}</span>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={profile.city || ""}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        //   required
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("street")}</span>
+                                        <input
+                                            type="text"
+                                            name="street"
+                                            value={profile.street || ""}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        //   required
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("spoken_languages")}</span>
+                                        <input
+                                            type="text"
+                                            name="spoken_languages"
+                                            value={profile.spoken_languages || ""}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        />
+                                    </label>
 
-                            <label className="block">
-                                <span className="text-gray-700">{t("spoken_languages")}</span>
-                                <Select
-                                    isMulti
-                                    options={languageOptions}
-                                    value={languages}
-                                    onChange={handleLanguageChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                    placeholder={t("select_languages")}
-                                />
-                            </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("spoken_languages")}</span>
+                                        <Select
+                                            isMulti
+                                            options={languageOptions}
+                                            value={languages}
+                                            onChange={handleLanguageChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                            placeholder={t("select_languages")}
+                                        />
+                                    </label>
 
 
-                            <label className="block">
-                                <span className="text-gray-700">{t("zoom_link")}</span>
-                                <input
-                                    type="url"
-                                    name="zoom_link"
-                                    value={profile.zoom_link || ""}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("daily_visit_limit")}</span>
-                                <input
-                                    type="number"
-                                    name="daily_visit_limit"
-                                    value={profile.daily_visit_limit || 0}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("specialization_id")}</span>
-                                <select name="specialization_id" value={profile.specialization_id} onChange={handleChange} className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none" required >
-                                    {specializations.map((specialization) => (
-                                        <option key={specialization.id} value={specialization.id}> {specialization.name}</option>
-                                    ))}
-                                </select>
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("latitude")}</span>
-                                <input
-                                    type="number"
-                                    name="latitude"
-                                    value={profile.latitude}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                />
-                            </label>
-                            <label className="block">
-                                <span className="text-gray-700">{t("longitude")}</span>
-                                <input
-                                    type="number"
-                                    name="longitude"
-                                    value={profile.longitude}
-                                    onChange={handleChange}
-                                    className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                />
-                            </label>
-                        
-                        <MapContainer
-                            center={position}
-                            zoom={13}
-                            scrollWheelZoom={false}
-                            className="w-full h-64 rounded-lg"
-                        >
-                            <TileLayer
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            />
-                            <LocationMarker />
-                        </MapContainer>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("zoom_link")}</span>
+                                        <input
+                                            type="url"
+                                            name="zoom_link"
+                                            value={profile.zoom_link || ""}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("daily_visit_limit")}</span>
+                                        <input
+                                            type="number"
+                                            name="daily_visit_limit"
+                                            value={profile.daily_visit_limit || 0}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("specialization_id")}</span>
+                                        <select name="specialization_id" value={profile.specialization_id} onChange={handleChange} className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none" required >
+                                            {specializations.map((specialization) => (
+                                                <option key={specialization.id} value={specialization.id}> {specialization.name}</option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("latitude")}</span>
+                                        <input
+                                            type="number"
+                                            name="latitude"
+                                            value={profile.latitude}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="text-gray-700">{t("longitude")}</span>
+                                        <input
+                                            type="number"
+                                            name="longitude"
+                                            value={profile.longitude}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                        />
+                                    </label>
+
+                                    <MapContainer
+                                        center={position}
+                                        zoom={13}
+                                        scrollWheelZoom={false}
+                                        className="w-full h-64 rounded-lg"
+                                    >
+                                        <TileLayer
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        />
+                                        <LocationMarker />
+                                    </MapContainer>
                                 </>
                             }
-                            </div>
+                        </div>
 
                         <button
                             type="submit"

@@ -2,92 +2,117 @@ import PropTypes from 'prop-types';
 import { Header } from '../../components/header/Header';
 import { Footer } from '../../components/footer/Footer';
 import { DoctorCard } from './DoctorCard';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 
 
 
 export const Doctors = ({ t }) => {
   // const [doctors, setDoctors] = useState([]);
-  const doctors = [
-    {
-      _id: 1,
-      name: "Achelache Aymen",
-      title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
-      rating: 4.5,
-      reviews: 1821,
-      specialization: "Cardiologist",
-      subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
-      location: "Ferdjioua, Mila",
-      fees: 400,
-      waitingTime: "1 Hour and 23 Minutes",
-      phone: "0660146380",
-      availability: [
-        { day: "Today", dis: ["5/15"] },
-        { day: "Tomorrow", dis: ["0/15"] },
-        { day: "Thu 11/21", dis: ["10/15"] },
-      ],
-      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
-    },
-    {
-      _id: 1,
-      name: "Achelache Aymen",
-      title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
-      rating: 4.5,
-      reviews: 1821,
-      specialization: "Cardiologist",
-      subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
-      location: "Ferdjioua, Mila",
-      fees: 400,
-      waitingTime: "1 Hour and 23 Minutes",
-      phone: "0660146380",
-      availability: [
-        { day: "Today", dis: ["5/15"] },
-        { day: "Tomorrow", dis: ["0/15"] },
-        { day: "Thu 11/21", dis: ["10/15"] },
-      ],
-      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
-    },
-    {
-      _id: 2,
-      name: "Achelache Aymen",
-      title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
-      rating: 4.5,
-      reviews: 1821,
-      specialization: "Cardiologist",
-      subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
-      location: "Ferdjioua, Mila",
-      fees: 400,
-      waitingTime: "1 Hour and 23 Minutes",
-      phone: "0660146380",
-      availability: [
-        { day: "Today", dis: ["5/15"] },
-        { day: "Tomorrow", dis: ["0/15"] },
-        { day: "Thu 11/21", dis: ["5/15"] },
-      ],
-      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
-    },
-    {
-      _id: 3,
-      name: "Muhammad Almessry",
-      title: "Ortho-Spine Surgery Consultant",
-      rating: 4.8,
-      reviews: 1400,
-      specialization: "Ortho-Spine Surgeon",
-      subSpecializations: ["Spine Surgery", "Orthopedics"],
-      location: "Nasr City: Abbas El-Akkad Street",
-      fees: 500,
-      waitingTime: "45 Minutes",
-      phone: "0777393396",
-      availability: [
-        { day: "Today", dis: ["8/15"] },
-        { day: "Tomorrow", dis: ["5/15"] },
-        { day: "Thu 11/21", dis: ["4/15"] },
-      ],
-      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
-    },
-  ];
+  // const doctors = [
+  //   {
+  //     _id: 1,
+  //     name: "Achelache Aymen",
+  //     title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
+  //     rating: 4.5,
+  //     reviews: 1821,
+  //     specialization: "Cardiologist",
+  //     subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
+  //     location: "Ferdjioua, Mila",
+  //     fees: 400,
+  //     waitingTime: "1 Hour and 23 Minutes",
+  //     phone: "0660146380",
+  //     availability: [
+  //       { day: "Today", dis: ["5/15"] },
+  //       { day: "Tomorrow", dis: ["0/15"] },
+  //       { day: "Thu 11/21", dis: ["10/15"] },
+  //     ],
+  //     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
+  //   },
+  //   {
+  //     _id: 1,
+  //     name: "Achelache Aymen",
+  //     title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
+  //     rating: 4.5,
+  //     reviews: 1821,
+  //     specialization: "Cardiologist",
+  //     subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
+  //     location: "Ferdjioua, Mila",
+  //     fees: 400,
+  //     waitingTime: "1 Hour and 23 Minutes",
+  //     phone: "0660146380",
+  //     availability: [
+  //       { day: "Today", dis: ["5/15"] },
+  //       { day: "Tomorrow", dis: ["0/15"] },
+  //       { day: "Thu 11/21", dis: ["10/15"] },
+  //     ],
+  //     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
+  //   },
+  //   {
+  //     _id: 2,
+  //     name: "Achelache Aymen",
+  //     title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
+  //     rating: 4.5,
+  //     reviews: 1821,
+  //     specialization: "Cardiologist",
+  //     subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
+  //     location: "Ferdjioua, Mila",
+  //     fees: 400,
+  //     waitingTime: "1 Hour and 23 Minutes",
+  //     phone: "0660146380",
+  //     availability: [
+  //       { day: "Today", dis: ["5/15"] },
+  //       { day: "Tomorrow", dis: ["0/15"] },
+  //       { day: "Thu 11/21", dis: ["5/15"] },
+  //     ],
+  //     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
+  //   },
+  //   {
+  //     _id: 3,
+  //     name: "Muhammad Almessry",
+  //     title: "Ortho-Spine Surgery Consultant",
+  //     rating: 4.8,
+  //     reviews: 1400,
+  //     specialization: "Ortho-Spine Surgeon",
+  //     subSpecializations: ["Spine Surgery", "Orthopedics"],
+  //     location: "Nasr City: Abbas El-Akkad Street",
+  //     fees: 500,
+  //     waitingTime: "45 Minutes",
+  //     phone: "0777393396",
+  //     availability: [
+  //       { day: "Today", dis: ["8/15"] },
+  //       { day: "Tomorrow", dis: ["5/15"] },
+  //       { day: "Thu 11/21", dis: ["4/15"] },
+  //     ],
+  //     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
+  //   },
+  // ];
+  const [searchParams] = useSearchParams();
+  const getQueryParams = () => {
+    return {
+      category: searchParams.get('category') || 'all',
+      page: searchParams.get('page') || 1,
+    };
+  };
+  const [doctors, setDoctors] = useState([]);
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      const { category, page } = getQueryParams();
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/homepage/doctors`, {
+          params: { category, page },
+        });
+        setDoctors(response.data.doctors || []);
+        console.log(response.data.doctors)
+      } catch (err) {
+        console.log(err)
+      }
+    };
 
+    fetchDoctors();
+  }, []);
 
   return (
     <>
@@ -98,7 +123,7 @@ export const Doctors = ({ t }) => {
           <h1 className="text-2xl font-bold mb-4">All Specialities</h1>
           {doctors.map((doctor, idx) => (
             <Link to={`/doctor/${doctor._id}`} key={idx}>
-              <DoctorCard doctor={doctor} t={t} />
+              <DoctorCard  doctor={doctor} t={t} />
             </Link>
           ))}
         </div>

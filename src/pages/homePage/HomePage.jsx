@@ -7,8 +7,25 @@ import { Link } from 'react-router-dom';
 import image1 from './../../assets/pexels-photo-8376277.jpeg'
 import image2 from './../../assets/pexels-shkrabaanthony-5467596.jpg'
 import image3 from './../../assets/follow-us@3x.png'
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export const HomePage = ({ t }) => {
+    const [specialties, setSpecialties] = useState([]);
+    useEffect(() => {
+        
+        const fetchSpecializations = async () => {
+            try {
+                const res = await axios.get("http://127.0.0.1:8000/specializations");
+                setSpecialties(res.data);
+
+            } catch (error) {
+                console.error("Error fetching specializations:", error);
+            }
+        };
+
+        fetchSpecializations();
+    }, []);
     const Specialties = [
         "Anesthesiology",
         "Cardiology",
@@ -158,24 +175,17 @@ export const HomePage = ({ t }) => {
                                         Home
                                     </a>
                                 </li>
-                                {Specialties.map((specialty, index) => (
+                                {specialties.map((specialty, index) => (
                                     <li key={index} className="max-lg:border-b max-lg:py-3">
                                         <a
                                             href="#"
                                             className="hover:text-[#007bff] text-gray-500 font-bold text-[15px] block text-nowrap"
                                         >
-                                            {t(`Specialities.${specialty}`)}
+                                            {specialty.name}
                                         </a>
                                     </li>
                                 ))}
-                                <li className="max-lg:border-b max-lg:py-3">
-                                    <a
-                                        href="#"
-                                        className="hover:text-[#007bff] text-gray-500 font-bold text-[15px] block"
-                                    >
-                                        More
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                     </div>
@@ -273,7 +283,7 @@ export const HomePage = ({ t }) => {
                             {t("HomePage.Teleconsultation.Title")}
                         </h2>
                         <h1 className="text-4xl font-bold text-gray-900">
-                        {t("HomePage.Teleconsultation.Description1")}
+                            {t("HomePage.Teleconsultation.Description1")}
                             <span className="text-blue-500"> {t("HomePage.Teleconsultation.Description11")}</span>
                         </h1>
                         <ul className="space-y-4 text-gray-600">
@@ -379,13 +389,13 @@ export const HomePage = ({ t }) => {
                 {/* Right Section - Text and Social Icons */}
                 <div className="w-full md:w-1/2">
                     <h3 className="text-red-500 uppercase font-bold tracking-wider mb-2">
-                    {t("HomePage.FollowUs.Title")}
+                        {t("HomePage.FollowUs.Title")}
                     </h3>
                     <h2 className="text-2xl font-extrabold mb-4">
-                    {t("HomePage.FollowUs.Description1")}
+                        {t("HomePage.FollowUs.Description1")}
                     </h2>
                     <p className="text-gray-600 mb-4">
-                    {t("HomePage.FollowUs.Description2")}
+                        {t("HomePage.FollowUs.Description2")}
                         <span className="font-bold text-gray-800">{t("HomePage.FollowUs.Description3")}</span>
                     </p>
 
@@ -422,7 +432,7 @@ export const HomePage = ({ t }) => {
                         {t("HomePage.home.aboutPlatform.description")}
                     </p>
                     <Link to='/' className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                    {t("Footer.About.AboutUs")}
+                        {t("Footer.About.AboutUs")}
                     </Link>
                 </div>
 

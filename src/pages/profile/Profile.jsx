@@ -48,7 +48,10 @@ export const MyProfile = ({ t }) => {
             },
           });
           setProfile({ ...userProfile, ...doctorResponse.data });
-          setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
+          if (profile.is_doctor && doctorResponse.data.latitude && doctorResponse.data.longitude) {
+            setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
+          }
+          
 
         } else {
           setProfile(userProfile);
@@ -56,6 +59,7 @@ export const MyProfile = ({ t }) => {
 
       } catch (err) {
         setError(t("profile.fetchError"));
+        console.log(err)
         // Cookies.remove("authToken");
         // navigate("/");
       } finally {
@@ -74,13 +78,7 @@ export const MyProfile = ({ t }) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
+
 
   if (!profile) {
     return (

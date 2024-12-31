@@ -6,12 +6,12 @@ export const DoctorCard = ({ doctor, t }) => {
             <div className="flex gap-6 max-md:flex-col justify-center items-start max-md:items-center flex-wrap max-sm:text-center">
                 {/* Doctor Image */}
                 <div className="w-24 h-24 bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
-                    <img src={doctor.img} alt="DoctorImg" />
+                    <img src={doctor.photo} alt="DoctorImg" />
                 </div>
                 <div className="flex-1">
                     {/* Doctor Details */}
                     <h3 className="text-xl font-bold text-blue-500">
-                    {t("doctorCard.doctor")} {doctor.name}
+                        {t("doctorCard.doctor")} {doctor.firstname} {doctor.familyname}
                     </h3>
                     <p className="text-gray-500 text-sm">{doctor.title}</p>
                     {/* Ratings */}
@@ -26,22 +26,22 @@ export const DoctorCard = ({ doctor, t }) => {
                     </div>
                     <p className="text-sm mt-1">
                         <span className="font-medium">{t("doctorCard.specializedIn")}</span>{" "}
-                        {doctor.subSpecializations.join(", ")}
+                        {doctor.specialite}
                     </p>
                     {/* Location */}
+                    <p className="text-sm text-gray-600">
+                        &#x1F4CD; {doctor.street}
+                    </p>
                     <p className="text-sm text-gray-600 mt-2">
-                        {t("doctorCard.location")} {doctor.location}, Algeria
+                        {t("doctorCard.location")} {doctor.city},{doctor.state}, Algeria
                     </p>
                     <p className="text-sm text-gray-600">
-                    {t("doctorCard.fees")} {doctor.fees} DA
+                        {t("doctorCard.fees")} {doctor.street}
                     </p>
-                    <p className="text-sm text-gray-600">
-                    {t("doctorCard.waitingTime")} {doctor.waitingTime}
-                    </p>
-                    <p className="text-sm text-gray-600">{t("doctorCard.phone")} {doctor.phone}</p>
+
                 </div>
                 {/* Appointment Section */}
-                <div className="mt-4 flex flex-col items-center">
+                {/* <div className="mt-4 flex flex-col items-center">
                     {doctor.availability.map((slot, index) => (
                         <div key={index} className="mt-2">
                             <h4 className="text-sm font-bold !text-center">{slot.day}</h4>
@@ -65,7 +65,7 @@ export const DoctorCard = ({ doctor, t }) => {
                             </div>
                         </div>
                     ))}
-                </div>
+                </div> */}
             </div>
         </div>
     );
@@ -75,4 +75,4 @@ export const DoctorCard = ({ doctor, t }) => {
 DoctorCard.propTypes = {
     doctor: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
-  };
+};
