@@ -81,7 +81,7 @@ export const WorkingDaysList = ({ t }) => {
             Working Days List
           </h1>
           <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-            <Link to={`/addworkingday`}><p className="cursor-pointer hover:text-black">Add Working Day</p></Link>
+            <Link to={`/addworkingday/${id}`}><p className="cursor-pointer hover:text-black">Add Working Day</p></Link>
           </button>
         </div>
         <div className="overflow-x-auto">

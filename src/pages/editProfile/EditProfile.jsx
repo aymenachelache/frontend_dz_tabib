@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 
 
 export const EditProfile = ({ t }) => {
+    const [errors, setErrors] = useState({});
+
     // const specializations = [{ id: 1, name: "Cardiologie" },
     // { id: 2, name: "Dermatologie" },
     // { id: 3, name: "Neurologie" },
@@ -96,7 +98,7 @@ export const EditProfile = ({ t }) => {
                     });
 
                     setProfile({ ...userProfile, ...doctorResponse.data });
-                    if (profile.is_doctor && doctorResponse.data.latitude && doctorResponse.data.longitude) {
+                    if (doctorResponse.data.latitude && doctorResponse.data.longitude) {
                         setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
                     }
                     const selectedLanguages = doctorResponse.data.spoken_languages
@@ -172,7 +174,8 @@ export const EditProfile = ({ t }) => {
             });
             navigate("/profile");
         } catch (err) {
-            console.log(err)
+            setErrors({ server: err.response?.data?.detail || t("Errors.UnknownError") });
+
         } finally {
             setLoading(false);
         }
@@ -385,6 +388,7 @@ export const EditProfile = ({ t }) => {
                                 </>
                             }
                         </div>
+                        {errors.server && <p className="mt-2 text-red-500 text-sm text-center">{errors.server}</p>}
 
                         <button
                             type="submit"

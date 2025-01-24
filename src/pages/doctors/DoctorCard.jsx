@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
-
+import doctorImg from "./../../assets/doctor.jpg"
 export const DoctorCard = ({ doctor, t }) => {
     return (
         <div className="bg-white hover:cursor-pointer hover:bg-blue-100 transition-all duration-300 ease-linear shadow-md p-6 rounded-lg mb-6">
             <div className="flex gap-6 max-md:flex-col justify-center items-start max-md:items-center flex-wrap max-sm:text-center">
                 {/* Doctor Image */}
                 <div className="w-24 h-24 bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
-                    <img src={doctor.photo} alt="DoctorImg" />
+                    <img src={doctor.photo || doctorImg} alt="DoctorImg" />
                 </div>
                 <div className="flex-1">
                     {/* Doctor Details */}
                     <h3 className="text-xl font-bold text-blue-500">
-                        {t("doctorCard.doctor")} {doctor.firstname} {doctor.familyname}
+                        {t("doctorCard.doctor")} {doctor.first_name} {doctor.last_name}
                     </h3>
                     <p className="text-gray-500 text-sm">{doctor.title}</p>
                     {/* Ratings */}
@@ -26,17 +26,14 @@ export const DoctorCard = ({ doctor, t }) => {
                     </div>
                     <p className="text-sm mt-1">
                         <span className="font-medium">{t("doctorCard.specializedIn")}</span>{" "}
-                        {doctor.specialite}
+                        {doctor.specialization_name}
                     </p>
                     {/* Location */}
-                    <p className="text-sm text-gray-600">
-                        &#x1F4CD; {doctor.street}
-                    </p>
                     <p className="text-sm text-gray-600 mt-2">
                         {t("doctorCard.location")} {doctor.city},{doctor.state}, Algeria
                     </p>
                     <p className="text-sm text-gray-600">
-                        {t("doctorCard.fees")} {doctor.street}
+                        {t("doctorCard.fees")} {doctor?.daily_visit_limit} DA
                     </p>
 
                 </div>

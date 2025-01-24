@@ -13,7 +13,7 @@ export const MyProfile = ({ t }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate()
-  const [position, setPosition] = useState([36.752887, 3.042048]);
+  const [position, setPosition] = useState([0, 0]);
   const onLocationSelect = (lat, lng) => { setProfile((prevProfile) => ({ ...prevProfile, latitude: lat, longitude: lng, })); };
   const LocationMarker = () => {
     useMapEvents({
@@ -40,7 +40,6 @@ export const MyProfile = ({ t }) => {
           },
         });
         const userProfile = userResponse.data;
-
         if (userProfile.is_doctor) {
           const doctorResponse = await axios.get("http://127.0.0.1:8000/doctor", {
             headers: {
@@ -48,9 +47,7 @@ export const MyProfile = ({ t }) => {
             },
           });
           setProfile({ ...userProfile, ...doctorResponse.data });
-          if (profile.is_doctor && doctorResponse.data.latitude && doctorResponse.data.longitude) {
-            setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
-          }
+          setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
           
 
         } else {

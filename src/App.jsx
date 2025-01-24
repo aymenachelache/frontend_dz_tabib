@@ -40,7 +40,7 @@ function App() {
         <Route path="/profile" element={<MyProfile t={t} />} />
         <Route path="/editprofile" element={<EditProfile t={t} />} />
         <Route path="/editwokringdays/:id" element={<EditWorkingDays t={t} />} />
-        <Route path="/addworkingday" element={<AddWorkingDay t={t} />} />
+        <Route path="/addworkingday/:id" element={<AddWorkingDay t={t} />} />
         <Route path="/workingdays/:id" element={<WorkingDaysList t={t} />} />
 
         

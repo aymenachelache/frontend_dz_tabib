@@ -85,7 +85,6 @@ export const SignUp = ({ t }) => {
         // Exclude confirmPassword from the data being sent
         // eslint-disable-next-line no-unused-vars
         const { confirmPassword, ...dataToSend } = formData;
-        console.log(dataToSend)
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/register', dataToSend, {
@@ -99,13 +98,14 @@ export const SignUp = ({ t }) => {
                 setErrors({ server: response.data.message || t("Errors.UnknownError") });
             }
         } catch (err) {
+            console.log()
+            const msgError = err.response?.data?.detail || err.response?.data?.detail[0].msg
             if (err.response) {
                 // Server returned an error response
-                setErrors({ server: err.response.data.message || "Errors.UnknownError" });
+                setErrors({ server: msgError || "Errors.UnknownError" });
             } else {
                 setErrors({ server: 'An error occurred. Please try again.' });
             }
-            console.error(err);
         }
     };
 
@@ -212,6 +212,7 @@ export const SignUp = ({ t }) => {
                                             id="password"
                                             name="password"
                                             type="password"
+                                            min={8}
                                             value={formData.password}
                                             onChange={handleChange}
                                             autoComplete="new-password"
@@ -230,6 +231,7 @@ export const SignUp = ({ t }) => {
                                             id="confirmPassword"
                                             name="confirmPassword"
                                             type="password"
+                                            min={8}
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
                                             autoComplete="new-password"

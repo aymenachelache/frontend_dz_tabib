@@ -6,7 +6,8 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-
+import doctorImg from "./../../assets/doctor.jpg"
+import Cookies from "js-cookie";
 
 export const DoctorProfile = ({ t }) => {
     const [profile, setProfile] = useState({});
@@ -20,26 +21,7 @@ export const DoctorProfile = ({ t }) => {
         });
         return position === null ? null : <Marker position={position} />;
     };
-    // const doctor = {
-    //     _id: 1,
-    //     name: "Achelache Aymen",
-    //     title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
-    //     description: "MSc and MD of Cardiology & Cardiovascular diseases - Al Azhar University. Cardiac Catheter Consultant - Fellow of the European Heart Association.",
-    //     rating: 4.5,
-    //     reviews: 1821,
-    //     specialization: "Cardiologist",
-    //     subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
-    //     location: "Ferdjioua, Mila",
-    //     fees: 400,
-    //     waitingTime: "1 Hour and 23 Minutes",
-    //     phone: "0660146380",
-    //     availability: [
-    //         { day: "Today", dis: ["5/15"] },
-    //         { day: "Tomorrow", dis: ["0/15"] },
-    //         { day: "Thu 11/21", dis: ["10/15"] },
-    //     ],
-    //     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
-    // }
+
     const doctor = {
         _id: 1,
         name: "Achelache Aymen",
@@ -100,15 +82,32 @@ export const DoctorProfile = ({ t }) => {
             }
         ] // Avis des patients
     };
+    const [workingDays, setWorkingDays] = useState([]);
 
     const { id } = useParams();
     useEffect(() => {
+        const token = Cookies.get("authToken");
+
         const fetchData = async () => {
             const doctorResponse = await axios.get(`http://127.0.0.1:8000/doctors/${id}`);
             setProfile(doctorResponse.data);
             console.log(doctorResponse.data)
-            setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
-            console.log(position)
+            const lat = doctorResponse.data?.latitude || 36.752887;
+            const lng = doctorResponse.data?.longitude || 3.042048;
+
+            setPosition([lat, lng]);
+            console.log(doctorResponse)
+
+
+
+            const response = await axios.get(`http://127.0.0.1:8000/working-days/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setWorkingDays(response.data);
+            console.log(workingDays)
+
         }
         fetchData();
 
@@ -122,7 +121,7 @@ export const DoctorProfile = ({ t }) => {
                     {/* Doctor Info */}
                     <section className="p-6 flex items-center gap-6 border-b">
                         <div className="w-28 h-28 object-cover bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
-                            <img src={!profile.photo ? doctor.img : profile.photo} alt="DoctorImg" />
+                            <img src={!profile.photo ? doctorImg : profile.photo} alt="DoctorImg" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-semibold">
@@ -134,13 +133,22 @@ export const DoctorProfile = ({ t }) => {
                             {/* Ratings */}
                             <div className="flex items-center mt-2">
                                 <div className="flex text-yellow-400">
-                                    {"★".repeat(Math.floor(doctor.rating.average))}
-                                    {"☆".repeat(5 - Math.floor(doctor.rating.average))}
+                                    {"★".repeat(Math.floor(profile.rating))}
+                                    {"☆".repeat(5 - Math.floor(profile.rating))}
                                 </div>
                                 <span className="text-gray-600 text-sm ml-2">
-                                    {doctor.rating.average} ({doctor.reviews} reviews)
+                                    {profile.rating} ({profile.reviews} reviews)
                                 </span>
                             </div>
+
+                            <div className="flex my-2">
+                                <div className="flex text-yellow-400">
+                                    {"★".repeat(Math.floor(profile.rating))}
+                                    {"☆".repeat(5 - Math.floor(profile.rating))}
+                                </div>
+
+                            </div>
+
                         </div>
                     </section>
 
@@ -172,7 +180,7 @@ export const DoctorProfile = ({ t }) => {
                                     </a>
                                 </p>
                                 <p className="my-1">
-                                    <strong>{t("daily_visit_limit")}:</strong> {profile.daily_visit_limit}
+                                    <strong>{t("Prix_Consultion")}:</strong> {profile.daily_visit_limit}
                                 </p>
                                 <p className="my-1">
                                     <strong>{t("Location")}:</strong>
@@ -218,7 +226,7 @@ export const DoctorProfile = ({ t }) => {
                                         </div>
                                     ))}
                                     <button className="text-blue-500 mt-2">View More</button>
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -243,26 +251,36 @@ export const DoctorProfile = ({ t }) => {
                             {/* Appointment Times */}
                             <div className="space-y-4">
                                 <div className="mt-1 !text-center">
-                                    {doctor.availability.map((el, idx) => (
-                                        <div key={idx} className='grid grid-cols-3'>
+                                    {workingDays.map((el, idx) => (
+                                        <>
+                                        <div key={idx} className='grid grid-cols-4 rounded-t-md overflow-hidden cursor-pointer'>
                                             <div
-                                                className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm px-4 py-3 rounded-s-md mb-2"
+                                                className="bg-blue-200 hover:bg-blue-300 text-sm px-4 py-3"
                                             >
-                                                {el.day}
+                                                {el.day_of_week}
                                             </div>
                                             <div
-                                                className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm px-4 py-3 mb-2"
+                                                className="bg-blue-200 !text-center hover:bg-blue-300 text-sm px-4 py-3"
                                             >
-                                                {el.availableSlots}/{profile.daily_visit_limit}
+                                                {el.daily_appointment_limit}
                                             </div>
-                                            <Link to="/appointment">
+                                            <div
+                                                className="col-span-2 !text-center bg-blue-200 hover:bg-blue-300 text-sm px-4 py-3"
+                                            >
+                                                {el?.hours[0].start_time} - {el?.hours[0].end_time}
+                                            </div>
+                                        </div>
+                                           <div className="w-full !text-center">
+                                           <Link to="/appointment">
                                                 <button
-                                                    className="text-sm px-4 py-3 rounded-e-md mb-2 bg-red-500 text-white font-semibold hover:bg-red-600"
+                                                    className="w-full !text-center text-sm px-4 py-3 rounded-b-md mb-2 bg-red-500 text-white font-semibold hover:bg-red-600"
                                                 >
                                                     {t("booking.book")}
                                                 </button>
                                             </Link>
-                                        </div>
+                                           </div>
+
+                                        </>
                                     ))}
                                 </div>
                             </div>

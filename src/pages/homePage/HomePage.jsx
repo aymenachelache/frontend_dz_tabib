@@ -9,11 +9,41 @@ import image2 from './../../assets/pexels-shkrabaanthony-5467596.jpg'
 import image3 from './../../assets/follow-us@3x.png'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import doctorImg from "./../../assets/doctor.jpg"
+
 
 export const HomePage = ({ t }) => {
     const [specialties, setSpecialties] = useState([]);
+    const [doctors, setDoctors] = useState([
+        {
+            _id: 1,
+            name: "Achelache Aymen",
+            specialty: "Cardiologue",
+            rating: 4,
+            location: "Ferdjioua, Mila, Algeria",
+            image: "https://via.placeholder.com/150",
+        },
+
+        {
+            _id: 1,
+            name: "Achelache Aymen",
+            specialty: "Homologue",
+            rating: 4,
+            location: "Ferdjioua, Mila, Algeria",
+            image: "https://via.placeholder.com/150",
+        },
+        {
+            _id: 1,
+            name: "Achelache Aymen",
+            specialty: "Homologue",
+            rating: 4,
+            location: "Ferdjioua, Mila, Algeria",
+            image: "https://via.placeholder.com/150",
+        }
+    ]);
+
     useEffect(() => {
-        
+
         const fetchSpecializations = async () => {
             try {
                 const res = await axios.get("http://127.0.0.1:8000/specializations");
@@ -25,6 +55,25 @@ export const HomePage = ({ t }) => {
         };
 
         fetchSpecializations();
+    }, []);
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/doctors`, {
+                    params: {
+                        page: 1,
+                        limit: 6,
+                    },
+                });
+                console.log(response.data)
+                setDoctors(response.data || []);
+                console.log(response.data.doctors)
+            } catch (err) {
+                console.log(err)
+            }
+        };
+
+        fetchDoctors();
     }, []);
     const Specialties = [
         "Anesthesiology",
@@ -50,56 +99,6 @@ export const HomePage = ({ t }) => {
         // "Urology"
     ];
 
-
-    const doctors = [
-        {
-            _id: 1,
-            name: "Achelache Aymen",
-            specialty: "Cardiologue",
-            rating: 4,
-            location: "Ferdjioua, Mila, Algeria",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            _id: 1,
-            name: "Achelache Aymen",
-            specialty: "Homologue",
-            rating: 4,
-            location: "Ferdjioua, Mila, Algeria",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            name: "Achelache Aymen",
-            specialty: "Homologue",
-            rating: 4,
-            location: "Ferdjioua, Mila, Algeria",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            _id: 1,
-            name: "Achelache Aymen",
-            specialty: "Homologue",
-            rating: 4,
-            location: "Ferdjioua, Mila, Algeria",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            _id: 1,
-            name: "Achelache Aymen",
-            specialty: "Homologue",
-            rating: 4,
-            location: "Ferdjioua, Mila, Algeria",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            _id: 1,
-            name: "Achelache Aymen",
-            specialty: "Homologue",
-            rating: 4,
-            location: "Ferdjioua, Mila, Algeria",
-            image: "https://via.placeholder.com/150",
-        }
-    ];
 
     const SpecialitiesMedical = [
         { name: t("Specialities.Geriatrics"), icon: "🌅" },
@@ -203,37 +202,33 @@ export const HomePage = ({ t }) => {
                 <div className="mb-10">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-semibold text-gray-800">{t("HomePage.home.AllDoctors")}</h2>
-                        <Link to="doctors" className="text-blue-500 hover:underline">
+                        <Link to="doctors?page=1&limit=10" className="text-blue-500 hover:underline">
                             {t("HomePage.home.SeeMore")}
                         </Link>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {doctors.map((doctor, index) => (
-                            <Link to={`doctor/${doctor._id}`} key={index}>
+                            <Link to={`doctor/${doctor.id}`} key={index}>
                                 <div
                                     className="border rounded-lg p-4 shadow-md flex flex-col items-center"
                                 >
                                     <img
-                                        src={doctor.image}
+                                        src={doctor.photo || doctorImg}
                                         alt={doctor.name}
                                         className="w-20 h-20 rounded-full mb-4"
                                     />
-                                    <h3 className="text-lg font-semibold">Dr. {doctor.name}</h3>
-                                    <p className="text-blue-500 text-sm">{doctor.specialty}</p>
-                                    <p className="text-gray-600 text-sm">{doctor.location}</p>
+                                    <h3 className="text-lg font-semibold">Dr. {doctor.first_name}  {doctor.last_name}</h3>
+                                    <p className="text-blue-500 text-sm">{doctor.specialization_name}</p>
+                                    <p className="text-gray-600 text-sm"> {doctor.city},{doctor.state}, Algeria</p>
                                     <div className="flex my-2">
-                                        {Array.from({ length: 5 }, (_, i) => (
-                                            <span
-                                                key={i}
-                                                className={`text-yellow-400 ${i < doctor.rating ? "text-yellow-500" : "text-gray-300"
-                                                    }`}
-                                            >
-                                                ★
-                                            </span>
-                                        ))}
+                                        <div className="flex text-yellow-400">
+                                            {"★".repeat(Math.floor(doctor.rating))}
+                                            {"☆".repeat(5 - Math.floor(doctor.rating))}
+                                        </div>
+
                                     </div>
                                     <div className="flex items-center gap-2 mt-4">
-                                        <Link to={`doctor/${doctor._id}`}>
+                                        <Link to={`doctor/${doctor.id}`}>
                                             <button className="text-xs border border-blue-500 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-100">
                                                 {t("HomePage.home.ViewProfile")}
                                             </button>
