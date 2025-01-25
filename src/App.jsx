@@ -14,7 +14,7 @@ import { BookingConfirmation } from "./pages/bookingConfirmation/BookingConfirma
 import { ForgetPassword } from "./pages/forgetPassword/ForgetPassword.jsx";
 import { ResetPassword } from "./pages/resetPassword/ResetPassword.jsx";
 import { MyProfile } from "./pages/profile/Profile.jsx";
-import { EditProfile } from "./pages/editProfile/editProfile.jsx";
+import { EditProfile } from "./pages/EditProfile/EditProfile.jsx";
 import { EditWorkingDays } from "./workingDays/EditWorkingDays.jsx";
 import { AddWorkingDay } from "./workingDays/AddWorkingDay.jsx";
 import { WorkingDaysList } from "./workingDays/WorkingDayList.jsx";
