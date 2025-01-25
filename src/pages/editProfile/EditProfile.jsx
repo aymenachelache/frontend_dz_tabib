@@ -437,6 +437,3 @@ export const EditProfile = ({ t }) => {
     );
 };
 
-EditProfile.propTypes = {
-    t: PropTypes.func.isRequired,
-};
