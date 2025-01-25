@@ -14,7 +14,7 @@ import { BookingConfirmation } from "./pages/bookingConfirmation/BookingConfirma
 import { ForgetPassword } from "./pages/forgetPassword/ForgetPassword.jsx";
 import { ResetPassword } from "./pages/resetPassword/ResetPassword.jsx";
 import { MyProfile } from "./pages/profile/Profile.jsx";
-import { EditProfile } from "./pages/EditProfile/EditProfile.jsx";
+// import { EditProfile } from "./pages/EditProfile/EditProfile.jsx";
 import { EditWorkingDays } from "./workingDays/EditWorkingDays.jsx";
 import { AddWorkingDay } from "./workingDays/AddWorkingDay.jsx";
 import { WorkingDaysList } from "./workingDays/WorkingDayList.jsx";
@@ -41,7 +41,7 @@ function App() {
         <Route path="bookingconfirmation" element={<BookingConfirmation t={t} />} />
         <Route path="/reset-password" element={<ResetPassword t={t} />} />
         <Route path="/profile" element={<MyProfile t={t} />} />
-        <Route path="/editprofile" element={<EditProfile t={t} />} />
+        {/* <Route path="/editprofile" element={<EditProfile t={t} />} /> */}
         <Route path="/editwokringdays/:id" element={<EditWorkingDays t={t} />} />
         <Route path="/addworkingday/:id" element={<AddWorkingDay t={t} />} />
         <Route path="/workingdays/:id" element={<WorkingDaysList t={t} />} />
