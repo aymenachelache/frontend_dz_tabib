@@ -233,7 +233,7 @@ export const HomePage = ({ t }) => {
                                                 {t("HomePage.home.ViewProfile")}
                                             </button>
                                         </Link>
-                                        <Link to="/appointment">
+                                        <Link to={`doctor/${doctor.id}`}>
                                             <button className="text-xs bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
                                                 {t("HomePage.home.BookAppointment")}
                                             </button>

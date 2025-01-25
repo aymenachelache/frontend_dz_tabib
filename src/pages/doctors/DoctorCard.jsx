@@ -33,7 +33,7 @@ export const DoctorCard = ({ doctor, t }) => {
                         {t("doctorCard.location")} {doctor.city},{doctor.state}, Algeria
                     </p>
                     <p className="text-sm text-gray-600">
-                        {t("doctorCard.fees")} {doctor?.daily_visit_limit} DA
+                        {t("doctorCard.fees")} {doctor?.visit_price} DA
                     </p>
 
                 </div>

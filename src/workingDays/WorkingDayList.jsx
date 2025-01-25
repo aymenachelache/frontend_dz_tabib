@@ -32,6 +32,7 @@ export const WorkingDaysList = ({ t }) => {
         setWorkingDays(response.data);
         console.log(response.data)
       } catch (err) {
+        console.log(err)
         setError("Error fetching working days.");
       } finally {
         setLoading(false);
@@ -66,10 +67,6 @@ export const WorkingDaysList = ({ t }) => {
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500 text-center py-8">{error}</div>;
   }
 
   return (

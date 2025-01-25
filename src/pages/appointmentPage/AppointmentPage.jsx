@@ -1,27 +1,90 @@
 import PropTypes from 'prop-types';
 import { Header } from '../../components/header/Header';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from "js-cookie";
+import doctorImg from "./../../assets/doctor.jpg";
 
 export const AppointmentPage = ({ t }) => {
-    const doctor = {
-        _id: 1,
-        name: "Achelache Aymen",
-        title: "Professor and Consultant of Cardiology & Cardiovascular diseases",
-        description: "MSc and MD of Cardiology & Cardiovascular diseases - Al Azhar University. Cardiac Catheter Consultant - Fellow of the European Heart Association.",
-        rating: 4.5,
-        reviews: 1821,
-        specialization: "Cardiologist",
-        subSpecializations: ["Adult Cardiology", "Pediatric Cardiology"],
-        location: "Ferdjioua, Mila",
-        fees: 400,
-        waitingTime: "1 Hour and 23 Minutes",
-        phone: "0660146380",
-        availability: [
-            { day: "Today", dis: ["5/15"] },
-            { day: "Tomorrow", dis: ["0/15"] },
-            { day: "Thu 11/21", dis: ["10/15"] },
-        ],
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfEry1FIDXr2v6ZEvWOn0PgOjsbsthO06JsA&s"
-    }
+    const [error, setError] = useState(null);
+    const [profile, setProfile] = useState({});
+    const [dayName, setDayName] = useState("");
+    const { id, jj, mm, aaaa, workingday } = useParams();
+    const [data, setData] = useState({
+        doctor_id: id,
+        date: `${aaaa}-${mm}-${jj}`,
+        type: "face_to_face",
+        reason: "",
+        status: "pending",
+        working_day_id: workingday
+    });
+
+
+    useEffect(() => {
+        const token = Cookies.get("authToken");
+
+        const fetchData = async () => {
+            const doctorResponse = await axios.get(`http://127.0.0.1:8000/doctors/${id}`);
+            setProfile(doctorResponse.data);
+        }
+        fetchData();
+
+        const getDayName = (workingDayId) => {
+            const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            return daysOfWeek[workingDayId] || "Invalid Day";
+        };
+        
+        // Example usage
+        setDayName(getDayName(workingday));
+
+    }, [id]);
+
+    const handleAppointmentTypeChange = (e) => {
+        const appointmentType = e.target.value;
+        setData(prevData => ({
+            ...prevData,
+            type: appointmentType
+        }));
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const token = Cookies.get("authToken");
+
+        console.log(data)
+        try {
+            const response = await axios.post("http://127.0.0.1:8000/appointment", data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Appointment booked successfully:", response.data);
+            // You can redirect the user or show a success message here
+            navigate("/myappointments");
+        } catch (error) {
+            console.log(error.response.data.detail)
+            setError(error.response.data.detail || 'An error occurred. Please try again.');
+
+        }
+    };
+
+    const navigate = useNavigate();
+
+    const handleGoBack = () => {
+        navigate(-1); // Navigate to the previous page
+    };
+
     return (
         <>
             <Header t={t} />
@@ -32,17 +95,17 @@ export const AppointmentPage = ({ t }) => {
                         <div className="max-md:col-span-2 col-span-1 border-r pr-6">
                             <div className="flex items-center gap-4">
                                 <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
-                                    <img src={doctor.img} alt="DoctorImg" />
+                                    <img src={profile.photo || doctorImg} alt="DoctorImg" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-semibold">{t("doctorCard.doctor")} {doctor.name}</h2>
+                                    <h2 className="text-xl font-semibold">{t("doctorCard.doctor")} {profile.first_name} {profile.last_name}</h2>
                                     <p className="text-gray-500">
-                                        {doctor.specialization}
+                                        {profile.specialization_name}
                                     </p>
                                 </div>
                             </div>
                             <p className="mt-6 text-gray-700">
-                                <strong>Tomorrow November 20</strong> - 7:00 PM,{" "}
+                                <strong>{dayName} {jj}-{mm}-{aaaa}</strong>,{" "}
                                 <span className="text-blue-500 font-semibold">
                                     Appointment reservation
                                 </span>
@@ -52,81 +115,63 @@ export const AppointmentPage = ({ t }) => {
                         {/* Right Section: Booking Form */}
                         <div className="max-md:col-span-2 col-span-1">
                             <h2 className="text-xl font-bold text-blue-500 mb-4">{t("appointmentPage.form.title")}</h2>
-                            <form className="space-y-4">
-                                {/* Patient Name */}
+                            <form className="space-y-4" onSubmit={handleSubmit}>
+                                {/* Reason */}
                                 <div>
                                     <label
-                                        htmlFor="name"
+                                        htmlFor="reason"
                                         className="block text-gray-600 mb-1 font-medium"
                                     >
-                                        {t("appointmentPage.form.patientNameLabel")}
+                                        {t("appointmentPage.form.Reason")} (Optional)
                                     </label>
                                     <input
-                                        id="name"
+                                        id="reason"
+                                        name="reason"
                                         type="text"
-                                        placeholder={t("appointmentPage.form.patientNamePlaceholder")}
+                                        value={data.reason}
+                                        onChange={handleInputChange}
+                                        placeholder={t("appointmentPage.form.Enter_Reason")}
                                         className="block w-full border-0  rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6 outline-none"
                                     />
                                 </div>
-                                {/* Mobile Number */}
+                                {/* Appointment Type */}
                                 <div>
                                     <label
-                                        htmlFor="phone"
+                                        htmlFor="appointment_type"
                                         className="block text-gray-600 mb-1 font-medium"
                                     >
-                                        {t("appointmentPage.form.mobileNumberLabel")}
+                                        {t("appointmentPage.form.appointmentTypeLabel")}
                                     </label>
-                                    <div className="flex items-center gap-2">
-                                        <select
-                                            className="border border-gray-300 rounded-lg p-2 bg-white outline-none"
-                                            defaultValue="ALG"
-                                        >
-                                            <option value="ALG">ALG</option>
-                                            <option value="US">🇺🇸</option>
-                                            <option value="FR">🇫🇷</option>
-                                        </select>
-                                        <input
-                                            id="phone"
-                                            type="text"
-                                            placeholder={t("appointmentPage.form.mobileNumberPlaceholder")}
-                                            className="block w-full border-0  rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6 outline-none"
-                                        />
-                                    </div>
+                                    <select
+                                        id="appointment_type"
+                                        name="type"
+                                        value={data.type}
+                                        onChange={handleAppointmentTypeChange}
+                                        className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6 outline-none"
+                                    >
+                                        <option value="face_to_face">Face-to-Face</option>
+                                        <option value="online">Online</option>
+                                    </select>
                                 </div>
-                                {/* Email Address */}
-                                <div>
-                                    <label
-                                        htmlFor="email"
-                                        className="block text-gray-600 mb-1 font-medium"
-                                    >
-                                        {t("booking.email")} {t("appointmentPage.form.optionnel")}
-                                    </label>
-                                    <input
-                                        id="email"
-                                        type="email"
-                                        placeholder={t("appointmentPage.form.emailPlaceholder")}
-                                        className="block w-full border-0  rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6 outline-none"
-                                    />
+                                {/* Submit Button */}
+                                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+                                <div className="mt-6 flex gap-4">
+                                    <button type="submit" className="!text-center flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600">
+                                        {t("appointmentPage.buttons.book")}
+                                    </button>
+                                    <button onClick={handleGoBack} type="button" className="!text-center flex-1 border border-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-100">
+                                        {t("appointmentPage.buttons.cancel")}
+                                    </button>
                                 </div>
                             </form>
-
-                            {/* Buttons */}
-                            <div className="mt-6 flex gap-4">
-                                <button className="!text-center flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600">
-                                    {t("appointmentPage.buttons.book")}
-                                </button>
-                                <button className="!text-center flex-1 border border-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-100">
-                                    {t("appointmentPage.buttons.cancel")}
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </>
-    )
-}
-
+    );
+};
 
 AppointmentPage.propTypes = {
     t: PropTypes.func.isRequired,

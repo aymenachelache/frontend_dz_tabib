@@ -50,7 +50,8 @@ export const AddWorkingDay = ({t}) => {
       console.log("Working day added:", response.data);
       navigate(`/workingdays/${id}`);  // Redirect to profile page after successful submission
     } catch (err) {
-      setError("Error adding working day.");
+      console.log()
+      setError(err.response.data.detail || "Error adding working day.");
       console.error(err);
     } finally {
       setLoading(false);

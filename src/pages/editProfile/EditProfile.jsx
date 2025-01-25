@@ -34,13 +34,13 @@ export const EditProfile = ({ t }) => {
         last_name: "",
         email: "",
         photo: "",
-        years_of_experience: 0,
+        experience_start_date: 0,
         state: "",
         city: "",
         street: "",
         spoken_languages: "",
         zoom_link: "",
-        daily_visit_limit: 0,
+        visit_price: 0,
         phone_number: "",
         specialization_id: 0,
         assurances: [],
@@ -146,13 +146,13 @@ export const EditProfile = ({ t }) => {
     const preparePayload = (profile) => {
         return {
             ...profile,
-            years_of_experience: profile.years_of_experience || 0,
+            experience_start_date: profile.experience_start_date || 0,
             state: profile.state || "",
             city: profile.city || "",
             street: profile.street || "",
             assurances: profile.assurances?.length > 0 ? profile.assurances : [],
             zoom_link: profile.zoom_link  || "",
-            daily_visit_limit: profile.daily_visit_limit  || 0,
+            visit_price: profile.visit_price  || 0,
             phone_number: profile.phone_number  || "",
             specialization_id: profile.specialization_id  || 1,
             photo: profile.photo || "" 
@@ -257,11 +257,11 @@ export const EditProfile = ({ t }) => {
                                 isDoctor &&
                                 <>
                                     <label className="block">
-                                        <span className="text-gray-700">{t("years_of_experience")}</span>
+                                        <span className="text-gray-700">{t("experience_start_date")}</span>
                                         <input
-                                            type="number"
-                                            name="years_of_experience"
-                                            value={profile.years_of_experience || ""}
+                                            type="date"
+                                            name="experience_start_date"
+                                            value={profile.experience_start_date || ""}
                                             onChange={handleChange}
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                             min={0}
@@ -335,11 +335,11 @@ export const EditProfile = ({ t }) => {
                                         />
                                     </label>
                                     <label className="block">
-                                        <span className="text-gray-700">{t("daily_visit_limit")}</span>
+                                        <span className="text-gray-700">{t("visit_price")}</span>
                                         <input
                                             type="number"
-                                            name="daily_visit_limit"
-                                            value={profile.daily_visit_limit || 0}
+                                            name="visit_price"
+                                            value={profile.visit_price || 0}
                                             onChange={handleChange}
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                         />

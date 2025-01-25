@@ -8,10 +8,14 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import doctorImg from "./../../assets/doctor.jpg"
 import Cookies from "js-cookie";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './DoctorProfile.css'
 
 export const DoctorProfile = ({ t }) => {
     const [profile, setProfile] = useState({});
-    const [position, setPosition] = useState([36.752887, 3.042048]);
+    const [position, setPosition] = useState([0, 0]);
+    const [MappingWokingDayId, setMappingWokingDayId] = useState(0);
     const onLocationSelect = (lat, lng) => { setProfile((prevProfile) => ({ ...prevProfile, latitude: lat, longitude: lng, })); };
     const LocationMarker = () => {
         useMapEvents({
@@ -106,12 +110,91 @@ export const DoctorProfile = ({ t }) => {
                 },
             });
             setWorkingDays(response.data);
+
             console.log(workingDays)
 
         }
         fetchData();
 
     }, []);
+
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    // Map des jours de la semaine (comme "Monday", "Friday") vers leurs valeurs numériques
+    const allowedDays = workingDays.map((item) => {
+        switch (item.day_of_week) {
+            case "Sunday":
+                return 0;
+            case "Monday":
+                return 1;
+            case "Tuesday":
+                return 2;
+            case "Wednesday":
+                return 3;
+            case "Thursday":
+                return 4;
+            case "Friday":
+                return 5;
+            case "Saturday":
+                return 6;
+            default:
+                return null;
+        }
+    }).filter(day => day !== null); // Filtrer les jours invalides
+
+    // Fonction pour gérer la sélection de la date
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        console.log("Date sélectionnée:", date);
+        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+
+        // Calculer MappingWokingDayId en fonction du jour de la semaine
+        const mappingId = (() => {
+            switch (dayOfWeek) {
+                case "Sunday":
+                    return 0;
+                case "Monday":
+                    return 1;
+                case "Tuesday":
+                    return 2;
+                case "Wednesday":
+                    return 3;
+                case "Thursday":
+                    return 4;
+                case "Friday":
+                    return 5;
+                case "Saturday":
+                    return 6;
+                default:
+                    return null;
+            }
+        })();
+
+        setMappingWokingDayId(mappingId);
+        console.log(MappingWokingDayId)
+    };
+
+    // Fonction pour exclure les dates qui ne correspondent pas aux jours spécifiés dans allowedDays
+    const getExcludedDates = () => {
+        const excludedDates = [];
+        const today = new Date();
+
+        // Créer une liste d'exclusion pour les 365 prochains jours
+        for (let i = 0; i < 365; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+
+            // Exclure les jours qui ne sont pas dans allowedDays
+            if (!allowedDays.includes(date.getDay())) {
+                excludedDates.push(date);
+            }
+        }
+
+        return excludedDates;
+    };
+
+    // Obtenir les dates à exclure
+    const excludedDates = getExcludedDates();
 
     return (
         <div className="doctor-profile h-auto">
@@ -141,13 +224,6 @@ export const DoctorProfile = ({ t }) => {
                                 </span>
                             </div>
 
-                            <div className="flex my-2">
-                                <div className="flex text-yellow-400">
-                                    {"★".repeat(Math.floor(profile.rating))}
-                                    {"☆".repeat(5 - Math.floor(profile.rating))}
-                                </div>
-
-                            </div>
 
                         </div>
                     </section>
@@ -157,40 +233,47 @@ export const DoctorProfile = ({ t }) => {
                         {/* Left Section */}
                         <div className="col-span-2 max-md:col-span-3">
                             {/* About the Doctor */}
-                            <div className="mb-6">
-                                <h2 className="text-xl font-bold mb-2">{t("aboutDoctor.title")}</h2>
-                                <p className="text-gray-700">
-                                    {doctor.description}
-                                </p>
-                                <p className="my-1">
-                                    <strong>{t("spoken_languages")}:</strong> {profile.spoken_languages}
-                                </p>
-                                <p className="my-1">
-                                    <strong>{t("years_of_experience")}:</strong> {profile.years_of_experience}
-                                </p>
-                                <p className="my-1">
-                                    <strong>{t("zoom_link")}:</strong>{" "}
+                            <div className="mb-6 p-6 bg-white shadow-lg rounded-xl border border-gray-200 space-y-6">
+
+                                {/* Spoken Languages */}
+                                <div className="flex items-center">
+                                    <strong className="w-48 text-gray-600">{t("spoken_languages")}:</strong>
+                                    <span className="text-gray-900 font-medium">{profile.spoken_languages}</span>
+                                </div>
+
+                                {/* Years of Experience */}
+                                <div className="flex items-center">
+                                    <strong className="w-48 text-gray-600">{t("years_of_experience")}:</strong>
+                                    <span className="text-gray-900 font-medium">{profile.experience_start_date} {t("years")}</span>
+                                </div>
+                                
+                                {/* Zoom Link */}
+                                <div className="flex items-center">
+                                    <strong className="w-48 text-gray-600">{t("zoom_link")}:</strong>
                                     <a
                                         href={profile.zoom_link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-blue-500"
+                                        className="text-blue-500 font-medium underline hover:text-blue-600 transition"
                                     >
-                                        {profile.zoom_link}
+                                        {t("join_zoom_meeting")}
                                     </a>
-                                </p>
-                                <p className="my-1">
-                                    <strong>{t("Prix_Consultion")}:</strong> {profile.daily_visit_limit}
-                                </p>
-                                <p className="my-1">
-                                    <strong>{t("Location")}:</strong>
-                                </p>
-                                <div className='my-5'>
+                                </div>
+
+                                {/* Consultation Price */}
+                                <div className="flex items-center">
+                                    <strong className="w-48 text-gray-600">{t("Prix_Consultion")}:</strong>
+                                    <span className="text-gray-900 font-medium">{profile.visit_price} DA</span>
+                                </div>
+
+                                {/* Map Section */}
+                                <div className="rounded-lg overflow-hidden shadow-md border border-gray-200">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-2 px-4 pt-4">{t("location_map")}</h3>
                                     <MapContainer
                                         center={position}
                                         zoom={13}
                                         scrollWheelZoom={false}
-                                        className="w-full h-64 rounded-lg"
+                                        className="w-full h-64"
                                         key={position}
                                     >
                                         <TileLayer
@@ -199,36 +282,9 @@ export const DoctorProfile = ({ t }) => {
                                         />
                                         <LocationMarker />
                                     </MapContainer>
-
-                                </div>
-
-
-                            </div>
-
-                            {/* Reviews Section */}
-                            <div>
-                                <h2 className="text-xl font-bold mb-4">{t("aboutDoctor.reviews")}</h2>
-                                <div className="space-y-4">
-                                    {doctor.comments.map((el, index) => (
-                                        <div
-                                            key={index}
-                                            className="bg-gray-100 p-4 rounded-lg shadow-sm"
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <p className="font-semibold">{el.patientName}</p>
-                                                <span className="text-blue-500 text-xl font-bold">
-                                                    {el.rating}
-                                                </span>
-                                            </div>
-                                            <p className="text-gray-500">
-                                                {el.comment}
-                                            </p>
-                                        </div>
-                                    ))}
-                                    <button className="text-blue-500 mt-2">View More</button>
-
                                 </div>
                             </div>
+
                         </div>
 
                         {/* Booking Section */}
@@ -253,35 +309,61 @@ export const DoctorProfile = ({ t }) => {
                                 <div className="mt-1 !text-center">
                                     {workingDays.map((el, idx) => (
                                         <>
-                                        <div key={idx} className='grid grid-cols-4 rounded-t-md overflow-hidden cursor-pointer'>
-                                            <div
-                                                className="bg-blue-200 hover:bg-blue-300 text-sm px-4 py-3"
-                                            >
-                                                {el.day_of_week}
+                                            <div key={idx} className='mb-1 grid grid-cols-4 rounded-t-md rounded-b-md overflow-hidden cursor-pointer'>
+                                                <div
+                                                    className="bg-blue-200 hover:bg-blue-300 text-sm px-4 py-3"
+                                                >
+                                                    {el.day_of_week}
+                                                </div>
+                                                <div
+                                                    className="bg-blue-200 !text-center hover:bg-blue-300 text-sm px-4 py-3"
+                                                >
+                                                    {el.daily_appointment_limit}
+                                                </div>
+                                                <div
+                                                    className="col-span-2 !text-center bg-blue-200 hover:bg-blue-300 text-sm px-4 py-3"
+                                                >
+                                                    {el?.hours[0].start_time} - {el?.hours[0].end_time}
+                                                </div>
                                             </div>
-                                            <div
-                                                className="bg-blue-200 !text-center hover:bg-blue-300 text-sm px-4 py-3"
-                                            >
-                                                {el.daily_appointment_limit}
-                                            </div>
-                                            <div
-                                                className="col-span-2 !text-center bg-blue-200 hover:bg-blue-300 text-sm px-4 py-3"
-                                            >
-                                                {el?.hours[0].start_time} - {el?.hours[0].end_time}
-                                            </div>
+
+                                        </>
+                                    ))}
+                                    <div className="mini-agenda-container mx-auto">
+                                        <h2 className='mb-2'>Sélectionner une date pour votre rendez-vous</h2>
+                                        <div className='w-full flex justify-center items-center'>
+                                            <DatePicker
+                                                selected={selectedDate}
+                                                onChange={handleDateChange}
+                                                dateFormat="dd/MM/yyyy"
+                                                minDate={new Date()}
+                                                inline
+                                                excludeDates={getExcludedDates()} // Exclure les dates spécifiées
+                                            />
                                         </div>
-                                           <div className="w-full !text-center">
-                                           <Link to="/appointment">
+                                        {selectedDate && (
+                                            <div className='mt-2 flex justify-center items-center'>
+                                                <h3>Date sélectionnée : {selectedDate.toLocaleDateString()}</h3>
+                                            </div>
+                                        )}
+
+                                    </div>
+                                    <div className="w-full !text-center mt-4">
+                                        {selectedDate ? (
+                                            <Link to={`/appointment/${id}/${selectedDate?.toLocaleDateString()}/${MappingWokingDayId}`}>
                                                 <button
-                                                    className="w-full !text-center text-sm px-4 py-3 rounded-b-md mb-2 bg-red-500 text-white font-semibold hover:bg-red-600"
+                                                    className="w-full !text-center text-sm px-4 py-3 rounded-b-md rounded-t-md mb-2 bg-red-500 text-white font-semibold hover:bg-red-600"
                                                 >
                                                     {t("booking.book")}
                                                 </button>
                                             </Link>
-                                           </div>
+                                        ) : (
+                                            <div className="text-red-500 font-semibold mt-2">
+                                                {t("booking.selectDateError", "Please select a date before booking.")}
+                                            </div>
+                                        )}
+                                    </div>
 
-                                        </>
-                                    ))}
                                 </div>
                             </div>
                         </div>

@@ -41,7 +41,8 @@ export const Login = ({ t }) => {
                 navigate('/');
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            console.log(err.response.data.detail)
+            setError(err.response.data.detail || 'An error occurred. Please try again.');
             console.error(err);
         }
     };

@@ -6,6 +6,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import doctorImg from "./../../assets/doctor.jpg"
 
 
 export const MyProfile = ({ t }) => {
@@ -13,7 +14,7 @@ export const MyProfile = ({ t }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate()
-  const [position, setPosition] = useState([0, 0]);
+  const [position, setPosition] = useState(null);
   const onLocationSelect = (lat, lng) => { setProfile((prevProfile) => ({ ...prevProfile, latitude: lat, longitude: lng, })); };
   const LocationMarker = () => {
     useMapEvents({
@@ -47,9 +48,9 @@ export const MyProfile = ({ t }) => {
             },
           });
           setProfile({ ...userProfile, ...doctorResponse.data });
-          setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
-          
-
+          const latitude = doctorResponse?.data?.latitude || 0;
+          const longitude = doctorResponse?.data?.longitude || 0;
+          setPosition([latitude, longitude]);
         } else {
           setProfile(userProfile);
         }
@@ -79,9 +80,7 @@ export const MyProfile = ({ t }) => {
 
   if (!profile) {
     return (
-      <div className="text-center py-10">
-        <p>{t("profile.noData")}</p>
-      </div>
+      Cookies.remove("authToken")
     );
   }
 
@@ -92,21 +91,28 @@ export const MyProfile = ({ t }) => {
         <div className="bg-gray-100 min-h-screen p-6">
           <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg">
             {/* Doctor Info */}
-            <section className="p-6 flex items-center gap-6 border-b">
-              <div className="w-28 h-28 object-cover bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
-                <img src={profile.photo || "https://via.placeholder.com/150"} alt="DoctorImg" />
+            <section className="p-6 flex items-center justify-between gap-6 border-b">
+              <div className="flex items-center gap-6">
+                <div className="w-28 h-28 object-cover bg-gray-200 rounded-full border-2 border-blue-400 overflow-hidden">
+                  <img src={profile.photo || doctorImg} alt="DoctorImg" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-semibold capitalize">
+                  {profile.is_doctor ? t("doctorCard.doctor") : ""} {`${profile.first_name} ${profile.last_name}`}
+                  </h1>
+                  <p className="text-gray-500">
+                    {profile.username}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-semibold">
-                  {t("doctorCard.doctor")} {`${profile.first_name} ${profile.last_name}`}
-                </h1>
-                <p className="text-gray-500">
-                  {profile.username}
-                </p>
+              <div className="flex gap-5">
+                <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                  <Link to={`/editprofile`}><p className="cursor-pointer hover:text-black">Edit My Profile</p></Link>
+                </button>
+                <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                  <Link to={`${profile.is_doctor ? "/appointments" : "/myappointments"}`}><p className="cursor-pointer hover:text-black">{profile.is_doctor ? "Appointments" : "My Appointents"}</p></Link>
+                </button>
               </div>
-              <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-                <Link to={`/editprofile`}><p className="cursor-pointer hover:text-black">Edit My Profile</p></Link>
-              </button>
             </section>
 
             {/* About and Booking */}
@@ -115,7 +121,7 @@ export const MyProfile = ({ t }) => {
               <div className="col-span-2 max-md:col-span-3">
                 {/* About the Doctor */}
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-2">{t("aboutDoctor.title")}</h2>
+                  {profile.is_doctor && <h2 className="text-xl font-bold mb-2">{t("aboutDoctor.title")}</h2>}
                   <p className="my-1">
                     <strong>{t("Email")}:</strong> {profile.email}
                   </p>
