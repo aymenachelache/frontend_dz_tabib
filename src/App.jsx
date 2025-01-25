@@ -20,6 +20,7 @@ import { AddWorkingDay } from "./workingDays/AddWorkingDay";
 import { WorkingDaysList } from "./workingDays/WorkingDayList";
 import DoctorAppointment from "./pages/DoctorAppointment/DoctorAppointment";
 import PatientAppointment from "./pages/PatientAppointment/patientAppointment";
+import { SearchPage } from "./pages/SearchPage/SearchPage";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -46,6 +47,7 @@ function App() {
         <Route path="/workingdays/:id" element={<WorkingDaysList t={t} />} />
         <Route path="/appointments" element={<DoctorAppointment t={t} />} />
         <Route path="/myappointments" element={<PatientAppointment t={t} />} />
+        <Route path="/search" element={<SearchPage t={t} />} />
 
         
       </Routes>

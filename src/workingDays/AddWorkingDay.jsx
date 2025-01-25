@@ -41,7 +41,7 @@ export const AddWorkingDay = ({t}) => {
     try {
       // Send the POST request to create a new working day
       console.log(workingDay)
-      const response = await axios.post("http://127.0.0.1:8000/working-days", [workingDay], {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/working-days`, [workingDay], {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

@@ -26,7 +26,7 @@ export const ForgetPassword = ({ t }) => {
             const formData = new FormData();
             formData.append("email", form.email);
             console.log(form)
-            const response = await axios.post('http://127.0.0.1:8000/forgot_password', form, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/forgot_password`, form, {
                 headers: { 'Content-Type': 'application/json' },
             });
 

@@ -24,7 +24,7 @@ export const WorkingDaysList = ({ t }) => {
       }
 
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/working-days/${id}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/working-days/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +50,7 @@ export const WorkingDaysList = ({ t }) => {
       const token = Cookies.get("authToken"); // Fetch token from cookies
       
       // API call to delete the working day by its ID
-      await axios.delete(`http://127.0.0.1:8000/working-days/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/working-days/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

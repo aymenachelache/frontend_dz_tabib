@@ -32,7 +32,7 @@ export const Doctors = ({ t }) => {
 
 
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/doctors`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/doctors`, {
           params: {
             page: page,
             limit: limit,
@@ -52,11 +52,9 @@ export const Doctors = ({ t }) => {
   return (
     <>
       <Header t={t} />
-      <div className='bg-gray-100 pt-14'>
-        <div>
-          <SearchBar />
-        </div>
+      <div className='bg-gray-100 pt-14 mt-7'>
         <div className="container min-h-screen mx-auto p-14 bg-white rounded-lg">
+      
           <h1 className="text-2xl font-bold mb-4">All Doctors</h1>
           {doctors.map((doctor, idx) => (
             <Link to={`/doctor/${doctor.id}`} key={idx}>

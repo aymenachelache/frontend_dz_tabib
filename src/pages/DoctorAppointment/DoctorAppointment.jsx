@@ -41,7 +41,7 @@ const DoctorAppointment = ({ t }) => {
 
                 // Faire la requête API avec la date sélectionnée
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/doctor/appointments/day?date=${formattedDate}`,
+                    `${import.meta.env.VITE_API_URL}/doctor/appointments/day?date=${formattedDate}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

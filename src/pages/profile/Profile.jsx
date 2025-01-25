@@ -35,14 +35,14 @@ export const MyProfile = ({ t }) => {
       }
 
       try {
-        const userResponse = await axios.get("http://127.0.0.1:8000/users/me", {
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         const userProfile = userResponse.data;
         if (userProfile.is_doctor) {
-          const doctorResponse = await axios.get("http://127.0.0.1:8000/doctor", {
+          const doctorResponse = await axios.get(`${import.meta.env.VITE_API_URL}/doctor`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

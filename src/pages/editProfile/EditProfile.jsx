@@ -8,16 +8,36 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 
-
 export const EditProfile = ({ t }) => {
     const [errors, setErrors] = useState({});
+    const [assurances, setAssurances] = useState([]);
+    const states = [
+        "Alger", "Oran", "Constantine", "Annaba", "Blida", "Batna", "Sétif", "Chlef", "Tizi Ouzou",
+        "Béjaïa", "Skikda", "Sidi Bel Abbès", "Tlemcen", "Ghardaïa", "Mostaganem", "Biskra",
+        "Tébessa", "El Oued", "Tiaret", "Ouargla", "Djelfa", "M'sila", "Jijel", "Relizane",
+        "Saïda", "Guelma", "Laghouat", "Médéa", "Tamanrasset", "Béchar", "Adrar", "Tindouf",
+        "Bordj Bou Arreridj", "Boumerdès", "El Tarf", "Tissemsilt", "Khenchela", "Souk Ahras",
+        "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent", "Ghardaïa", "Ouled Djellal",
+        "Bouira", "Illizi", "Tamanrasset", "Timimoun", "Beni Abbès", "In Salah", "In Guezzam",
+        "Touggourt", "Djanet", "El M'Ghair", "El Meniaa", "Ouled Djellal"
+    ];
 
-    // const specializations = [{ id: 1, name: "Cardiologie" },
-    // { id: 2, name: "Dermatologie" },
-    // { id: 3, name: "Neurologie" },
-    // { id: 4, name: "Pédiatrie" },
-    // { id: 5, name: "Gynécologie" },
-    // { id: 6, name: "Oncologie" },];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/adv_search`);  // Replace with actual backend API endpoint
+                const { assurances } = response.data;
+                setAssurances(Object.values(assurances));
+                console.log(response.data)
+                console.log(response.data)
+            } catch (error) {
+                console.error("Error fetching assurances:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const [specializations, setSpecializations] = useState([]);
 
     const languageOptions = [
@@ -47,6 +67,7 @@ export const EditProfile = ({ t }) => {
         latitude: 0,
         longitude: 0,
     });
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -55,12 +76,20 @@ export const EditProfile = ({ t }) => {
     const [isDoctor, setIsDoctor] = useState(false);
     const navigate = useNavigate();
 
+    const onLocationSelect = (lat, lng) => {
+        setProfile((prevProfile) => ({
+            ...prevProfile,
+            latitude: lat,
+            longitude: lng,
+        }));
+    };
 
-    const onLocationSelect = (lat, lng) => { setProfile((prevProfile) => ({ ...prevProfile, latitude: lat, longitude: lng, })); };
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
-                const { lat, lng } = e.latlng; setPosition([lat, lng]); onLocationSelect(lat, lng);
+                const { lat, lng } = e.latlng;
+                setPosition([lat, lng]);
+                onLocationSelect(lat, lng);
             },
         });
         return position === null ? null : <Marker position={position} />;
@@ -69,21 +98,24 @@ export const EditProfile = ({ t }) => {
     const handleLanguageChange = (selectedOptions) => {
         setLanguages(selectedOptions);
         const languageString = selectedOptions.map((option) => option.value).join(", ");
-        setProfile((prevProfile) => ({ ...prevProfile, spoken_languages: languageString }));
-        console.log(languages)
+        setProfile((prevProfile) => ({
+            ...prevProfile,
+            spoken_languages: languageString,
+        }));
     };
+
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const token = Cookies.get("authToken"); // Fetch token from cookies
+            const token = Cookies.get("authToken");
             if (!token) {
-                navigate("/login"); // Redirect to login if no token found
+                navigate("/login");
                 setLoading(false);
                 return;
             }
 
             try {
-                const response = await axios.get("http://127.0.0.1:8000/users/me", {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -91,22 +123,28 @@ export const EditProfile = ({ t }) => {
                 const userProfile = response.data;
                 setIsDoctor(userProfile.is_doctor);
                 if (userProfile.is_doctor) {
-                    const doctorResponse = await axios.get("http://127.0.0.1:8000/doctor", {
+                    const doctorResponse = await axios.get(`${import.meta.env.VITE_API_URL}/doctor`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     });
 
-                    setProfile({ ...userProfile, ...doctorResponse.data });
+                    setProfile({
+                        ...userProfile,
+                        ...doctorResponse.data,
+                        assurances: doctorResponse.data.assurances || [],
+                    });
+
                     if (doctorResponse.data.latitude && doctorResponse.data.longitude) {
                         setPosition([doctorResponse.data.latitude, doctorResponse.data.longitude]);
                     }
+
                     const selectedLanguages = doctorResponse.data.spoken_languages
                         .split(", ")
                         .map((lang) => {
-                            return languageOptions.find(option => option.value === lang);
+                            return languageOptions.find((option) => option.value === lang);
                         })
-                        .filter(Boolean); // Filter out undefined values
+                        .filter(Boolean);
                     setLanguages(selectedLanguages);
                 } else {
                     setProfile(userProfile);
@@ -120,19 +158,15 @@ export const EditProfile = ({ t }) => {
 
         fetchProfile();
 
-
-        // Fetch specializations from the API
         const fetchSpecializations = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/specializations");
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/specializations`);
                 setSpecializations(res.data);
-
             } catch (error) {
                 console.error("Error fetching specializations:", error);
             }
         };
 
-        // Call the async function
         fetchSpecializations();
     }, []);
 
@@ -143,6 +177,7 @@ export const EditProfile = ({ t }) => {
             [name]: value,
         }));
     };
+
     const preparePayload = (profile) => {
         return {
             ...profile,
@@ -150,32 +185,31 @@ export const EditProfile = ({ t }) => {
             state: profile.state || "",
             city: profile.city || "",
             street: profile.street || "",
-            assurances: profile.assurances?.length > 0 ? profile.assurances : [],
-            zoom_link: profile.zoom_link  || "",
-            visit_price: profile.visit_price  || 0,
-            phone_number: profile.phone_number  || "",
-            specialization_id: profile.specialization_id  || 1,
-            photo: profile.photo || "" 
+            assurances: profile.assurances || [],
+            zoom_link: profile.zoom_link || "",
+            visit_price: profile.visit_price || 0,
+            phone_number: profile.phone_number || "",
+            specialization_id: profile.specialization_id || 1,
+            photo: profile.photo || "",
         };
     };
+
     const handleSubmit = async (e) => {
+        console.log(profile)
         e.preventDefault();
         setLoading(true);
-        const token = Cookies.get("authToken"); // Fetch token from cookies
+        const token = Cookies.get("authToken");
 
         try {
-            console.log(profile)
-            console.log(preparePayload(profile))
-            const res = await axios.put("http://127.0.0.1:8000/profile", preparePayload(profile), {
+            const res = await axios.put(`${import.meta.env.VITE_API_URL}/profile`, preparePayload(profile), {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
             });
             navigate("/profile");
         } catch (err) {
             setErrors({ server: err.response?.data?.detail || t("Errors.UnknownError") });
-
         } finally {
             setLoading(false);
         }
@@ -207,6 +241,7 @@ export const EditProfile = ({ t }) => {
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                     required
+                                    disabled={!isDoctor}
                                 />
                             </label>
                             <label className="block">
@@ -218,6 +253,7 @@ export const EditProfile = ({ t }) => {
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                     required
+                                    disabled={!isDoctor}
                                 />
                             </label>
                             <label className="block">
@@ -229,6 +265,7 @@ export const EditProfile = ({ t }) => {
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                     required
+                                    disabled={!isDoctor}
                                 />
                             </label>
                             <label className="block">
@@ -240,6 +277,7 @@ export const EditProfile = ({ t }) => {
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                     required
+                                    disabled={!isDoctor}
                                 />
                             </label>
                             <label className="block">
@@ -250,11 +288,10 @@ export const EditProfile = ({ t }) => {
                                     value={profile.phone_number || ""}
                                     onChange={handleChange}
                                     className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                //   required
+                                    disabled={!isDoctor}
                                 />
                             </label>
-                            {
-                                isDoctor &&
+                            {isDoctor && (
                                 <>
                                     <label className="block">
                                         <span className="text-gray-700">{t("experience_start_date")}</span>
@@ -264,19 +301,24 @@ export const EditProfile = ({ t }) => {
                                             value={profile.experience_start_date || ""}
                                             onChange={handleChange}
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                            min={0}
                                         />
                                     </label>
                                     <label className="block">
                                         <span className="text-gray-700">{t("state")}</span>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="state"
                                             value={profile.state || ""}
                                             onChange={handleChange}
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                        //   required
-                                        />
+                                            required
+                                        >
+                                            <option value="">{t("select_state")}</option>
+                                            {states.map((state, index) => (
+                                                <option key={index} value={state}>
+                                                    {state}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </label>
                                     <label className="block">
                                         <span className="text-gray-700">{t("city")}</span>
@@ -286,7 +328,6 @@ export const EditProfile = ({ t }) => {
                                             value={profile.city || ""}
                                             onChange={handleChange}
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                        //   required
                                         />
                                     </label>
                                     <label className="block">
@@ -297,20 +338,8 @@ export const EditProfile = ({ t }) => {
                                             value={profile.street || ""}
                                             onChange={handleChange}
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                        //   required
                                         />
                                     </label>
-                                    <label className="block">
-                                        <span className="text-gray-700">{t("spoken_languages")}</span>
-                                        <input
-                                            type="text"
-                                            name="spoken_languages"
-                                            value={profile.spoken_languages || ""}
-                                            onChange={handleChange}
-                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
-                                        />
-                                    </label>
-
                                     <label className="block">
                                         <span className="text-gray-700">{t("spoken_languages")}</span>
                                         <Select
@@ -322,8 +351,6 @@ export const EditProfile = ({ t }) => {
                                             placeholder={t("select_languages")}
                                         />
                                     </label>
-
-
                                     <label className="block">
                                         <span className="text-gray-700">{t("zoom_link")}</span>
                                         <input
@@ -346,9 +373,17 @@ export const EditProfile = ({ t }) => {
                                     </label>
                                     <label className="block">
                                         <span className="text-gray-700">{t("specialization_id")}</span>
-                                        <select name="specialization_id" value={profile.specialization_id} onChange={handleChange} className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none" required >
+                                        <select
+                                            name="specialization_id"
+                                            value={profile.specialization_id}
+                                            onChange={handleChange}
+                                            className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
+                                            required
+                                        >
                                             {specializations.map((specialization) => (
-                                                <option key={specialization.id} value={specialization.id}> {specialization.name}</option>
+                                                <option key={specialization.id} value={specialization.id}>
+                                                    {specialization.name}
+                                                </option>
                                             ))}
                                         </select>
                                     </label>
@@ -372,7 +407,6 @@ export const EditProfile = ({ t }) => {
                                             className="block w-full border-0 rounded-lg p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm/6 outline-none"
                                         />
                                     </label>
-
                                     <MapContainer
                                         center={position}
                                         zoom={13}
@@ -386,10 +420,9 @@ export const EditProfile = ({ t }) => {
                                         <LocationMarker />
                                     </MapContainer>
                                 </>
-                            }
+                            )}
                         </div>
                         {errors.server && <p className="mt-2 text-red-500 text-sm text-center">{errors.server}</p>}
-
                         <button
                             type="submit"
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"

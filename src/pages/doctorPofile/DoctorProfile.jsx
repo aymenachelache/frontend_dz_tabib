@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DoctorProfile.css'
+import { Rating } from '../../components/rating/Rating';
 
 export const DoctorProfile = ({ t }) => {
     const [profile, setProfile] = useState({});
@@ -93,7 +94,7 @@ export const DoctorProfile = ({ t }) => {
         const token = Cookies.get("authToken");
 
         const fetchData = async () => {
-            const doctorResponse = await axios.get(`http://127.0.0.1:8000/doctors/${id}`);
+            const doctorResponse = await axios.get(`${import.meta.env.VITE_API_URL}/doctors/${id}`);
             setProfile(doctorResponse.data);
             console.log(doctorResponse.data)
             const lat = doctorResponse.data?.latitude || 36.752887;
@@ -104,7 +105,7 @@ export const DoctorProfile = ({ t }) => {
 
 
 
-            const response = await axios.get(`http://127.0.0.1:8000/working-days/${id}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/working-days/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -220,7 +221,7 @@ export const DoctorProfile = ({ t }) => {
                                     {"☆".repeat(5 - Math.floor(profile.rating))}
                                 </div>
                                 <span className="text-gray-600 text-sm ml-2">
-                                    {profile.rating} ({profile.reviews} reviews)
+                                    {Math.round(profile.rating)}
                                 </span>
                             </div>
 
@@ -246,7 +247,7 @@ export const DoctorProfile = ({ t }) => {
                                     <strong className="w-48 text-gray-600">{t("years_of_experience")}:</strong>
                                     <span className="text-gray-900 font-medium">{profile.experience_start_date} {t("years")}</span>
                                 </div>
-                                
+
                                 {/* Zoom Link */}
                                 <div className="flex items-center">
                                     <strong className="w-48 text-gray-600">{t("zoom_link")}:</strong>
@@ -284,7 +285,9 @@ export const DoctorProfile = ({ t }) => {
                                     </MapContainer>
                                 </div>
                             </div>
-
+                            <div className='flex justify-center items-center text-center'>
+                                <Rating idDoctor={profile.id} />
+                            </div>
                         </div>
 
                         {/* Booking Section */}
@@ -363,7 +366,6 @@ export const DoctorProfile = ({ t }) => {
                                             </div>
                                         )}
                                     </div>
-
                                 </div>
                             </div>
                         </div>

@@ -25,7 +25,7 @@ export const AppointmentPage = ({ t }) => {
         const token = Cookies.get("authToken");
 
         const fetchData = async () => {
-            const doctorResponse = await axios.get(`http://127.0.0.1:8000/doctors/${id}`);
+            const doctorResponse = await axios.get(`${import.meta.env.VITE_API_URL}/doctors/${id}`);
             setProfile(doctorResponse.data);
         }
         fetchData();
@@ -63,7 +63,7 @@ export const AppointmentPage = ({ t }) => {
 
         console.log(data)
         try {
-            const response = await axios.post("http://127.0.0.1:8000/appointment", data, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/appointment`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

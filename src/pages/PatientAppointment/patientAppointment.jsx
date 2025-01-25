@@ -19,7 +19,7 @@ const PatientAppointment = ({ t }) => {
 
                 // Make API request to fetch all appointments
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/user/appointments`,
+                   `${import.meta.env.VITE_API_URL}/user/appointments`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ const PatientAppointment = ({ t }) => {
             const token = Cookies.get("authToken"); // Get the token from cookies
 
             // Send DELETE request to remove the appointment
-            await axios.delete(`http://127.0.0.1:8000/user/appointments/${appointmentId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/user/appointments/${appointmentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

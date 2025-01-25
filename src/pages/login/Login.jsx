@@ -28,7 +28,7 @@ export const Login = ({ t }) => {
             formData.append("username", form.username);
             formData.append("password", form.password);
 
-            const response = await axios.post('http://127.0.0.1:8000/token', formData);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/token`, formData);
 
             if (response.status === 200) {
                 console.log(response);  // Log the entire response object

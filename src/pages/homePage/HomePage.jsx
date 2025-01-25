@@ -10,10 +10,12 @@ import image3 from './../../assets/follow-us@3x.png'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import doctorImg from "./../../assets/doctor.jpg"
+import { SearchBar } from '../../components/search/SearchBar';
 
 
 export const HomePage = ({ t }) => {
     const [specialties, setSpecialties] = useState([]);
+
     const [doctors, setDoctors] = useState([
         {
             _id: 1,
@@ -46,7 +48,8 @@ export const HomePage = ({ t }) => {
 
         const fetchSpecializations = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/specializations");
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/specializations`
+                );
                 setSpecialties(res.data);
 
             } catch (error) {
@@ -59,7 +62,7 @@ export const HomePage = ({ t }) => {
     useEffect(() => {
         const fetchDoctors = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/doctors`, {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/doctors`, {
                     params: {
                         page: 1,
                         limit: 6,
@@ -75,29 +78,8 @@ export const HomePage = ({ t }) => {
 
         fetchDoctors();
     }, []);
-    const Specialties = [
-        "Anesthesiology",
-        "Cardiology",
-        "Dermatology",
-        "Endocrinology",
-        "Family Medicine",
-        // "Gastroenterology",
-        // "Geriatrics",
-        // "Hematology",
-        // "Infectious Disease",
-        // "Internal Medicine",
-        // "Neurology",
-        // "Obstetrics and Gynecology",
-        // "Oncology",
-        // "Ophthalmology",
-        // "Orthopedic Surgery",
-        // "Pediatrics",
-        // "Psychiatry",
-        // "Pulmonology",
-        // "Rheumatology",
-        // "Surgery",
-        // "Urology"
-    ];
+
+
 
 
     const SpecialitiesMedical = [
@@ -117,40 +99,14 @@ export const HomePage = ({ t }) => {
                         <p className="text-white mt-5 tracking-wider text-base">{t("HomePage.hero.reservation")}</p>
                     </div>
                     <div className="mt-7 flex justify-center items-center md:justify-start flex-col md:flex-row gap-6">
-                        <form className="flex flex-col md:flex-row gap-3">
-                            <div className="flex">
-                                <input
-                                    type="text"
-                                    placeholder="Search for the doctor"
-                                    className="w-full md:w-80 px-3 h-10 rounded-s border-2 border-sky-500 focus:outline-none focus:border-sky-500"
-                                />
-                                <button
-                                    type="submit"
-                                    className="bg-sky-500 text-white rounded-e px-2 md:px-3 py-0 md:py-1"
-                                >
-                                    Search
-                                </button>
-                            </div>
-                            <select
-                                id="pricingType"
-                                name="pricingType"
-                                className="w-full h-10 border-2 border-sky-500 focus:outline-none focus:border-sky-500 text-sky-500 rounded px-2 md:px-3 py-0 md:py-1 tracking-wider"
-                            >
-                                <option value="All" selected="">
-                                    All
-                                </option>
-                                <option value="doctors">Doctors</option>
-                                <option value="area">Speciality</option>
-                                <option value="area">State</option>
-                                <option value="Paid">City</option>
-                            </select>
-                        </form>
 
                     </div>
+                    <SearchBar />
                 </div>
             </div>
             <div>
                 <div className="shadow-md bg-white font-sans tracking-wide relative z-50">
+
                     <section className="flex items-center justify-center flex-wrap gap-5 relative py-3 px-10 border-gray-200 border-b lg:min-h-[80px] max-lg:min-h-[60px]">
                         <a href="#">
                             <img
@@ -175,7 +131,7 @@ export const HomePage = ({ t }) => {
                                     </a>
                                 </li>
                                 {specialties.map((specialty, index) => (
-                                    <li key={index} className="max-lg:border-b max-lg:py-3">
+                                    <li key={index} value={specialty.name} className="max-lg:border-b max-lg:py-3">
                                         <a
                                             href="#"
                                             className="hover:text-[#007bff] text-gray-500 font-bold text-[15px] block text-nowrap"

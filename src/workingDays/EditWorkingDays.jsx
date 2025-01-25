@@ -25,7 +25,7 @@ export const EditWorkingDays = ({ t }) => {
             }
 
             try {
-                const response = await axios.get("http://127.0.0.1:8000/working-days/1", {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/working-days/1`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -70,7 +70,7 @@ export const EditWorkingDays = ({ t }) => {
             }))
         };
         try {
-            const res = await axios.put(`http://127.0.0.1:8000/working-days/${id}?working_hour_id=${workingDays[0].hours[0].hour_id}`, dataToSend, {
+            const res = await axios.put(`${import.meta.env.VITE_API_URL}/working-days/${id}?working_hour_id=${workingDays[0].hours[0].hour_id}`, dataToSend, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",

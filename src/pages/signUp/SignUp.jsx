@@ -87,7 +87,7 @@ export const SignUp = ({ t }) => {
         const { confirmPassword, ...dataToSend } = formData;
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/register', dataToSend, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/register`, dataToSend, {
                 headers: { 'Content-Type': 'application/json' },
             });
 
