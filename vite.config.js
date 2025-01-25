@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173, // Spécifie le port pour le serveur de développement
+    port: 5173,
   },
+  build: {
+    outDir: 'dist', // Specify the output directory
+    sourcemap: false, // Disable source maps in production
+    minify: 'terser', // Use Terser for minification
+  }
 })
